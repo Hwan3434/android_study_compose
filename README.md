@@ -37,12 +37,12 @@
 - 모듈 의존성
   - Core
   - EntityModel
-  - UI 
+  - DI
 
 ## 모듈 의존성
 
 ### Core
-- NONE
+- EntityModel
 ---
 ### Data
 - DataModel

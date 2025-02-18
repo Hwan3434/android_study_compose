@@ -21,3 +21,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "Favorite"
 include(":app")
+include(":data")
+include(":domain")
+include(":dataModel")
+include(":entityModel")
+include(":DI")
+include(":core")
