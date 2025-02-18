@@ -35,10 +35,9 @@
 ## 앱 구조
 ### App 의존성
 - 모듈 의존성
-  - `Core`
-  - `Entity`
-  - `DI`
-  - `UI` 
+  - Core
+  - EntityModel
+  - UI 
 
 ## 모듈 의존성
 
@@ -56,10 +55,6 @@
 - EntityModel
 ### EntityModel
 - NONE
----
-### UI
-- Domain
-- EntityModel
 ---
 ### DI
 - Data
