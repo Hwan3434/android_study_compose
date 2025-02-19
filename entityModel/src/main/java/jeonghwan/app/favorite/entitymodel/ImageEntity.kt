@@ -1,5 +1,7 @@
 package jeonghwan.app.favorite.entitymodel
 
+import kotlinx.datetime.LocalDateTime
+
 data class ImageEntity(
     val collection: String,
     val thumbnail: String,
@@ -8,13 +10,11 @@ data class ImageEntity(
     val height: Int,
     val displaySiteName: String,
     val docUrl: String,
-    val dateTime: String
-) : ContentEntity {
+    override val dateTime: LocalDateTime
+) : ContentEntity(
+    dateTime = dateTime
+) {
     override fun getThumbnailUrl(): String {
         return thumbnail
-    }
-
-    override fun getDateTime(): Pair<String, String> {
-        return formatDateTimeHigh(dateTime)
     }
 }

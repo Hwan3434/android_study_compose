@@ -1,18 +1,18 @@
 package jeonghwan.app.favorite.entitymodel
 
+import kotlinx.datetime.LocalDateTime
+
 data class MovieEntity(
     val title: String,
     val playTime: Int,
     val thumbnail: String,
     val url: String,
-    val dateTime: String,
+    override val dateTime: LocalDateTime,
     val author: String
-) : ContentEntity {
+) : ContentEntity(
+    dateTime = dateTime
+) {
     override fun getThumbnailUrl(): String {
         return thumbnail
-    }
-
-    override fun getDateTime(): Pair<String, String> {
-        return formatDateTimeHigh(dateTime)
     }
 }
