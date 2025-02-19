@@ -4,5 +4,5 @@ import jeonghwan.app.favorite.entitymodel.ImageEntity
 import jeonghwan.app.favorite.entitymodel.QueryEntity
 
 interface ImageRepositoryInterface {
-    suspend fun getImage(query: QueryEntity): List<ImageEntity>
+    suspend fun getImage(query: QueryEntity): Result<List<ImageEntity>>
 }
