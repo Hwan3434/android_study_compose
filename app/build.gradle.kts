@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,5 +74,11 @@ dependencies {
     testImplementation(libs.mockk)
     implementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.mockk.android)
+
+    // paing
+    implementation(libs.androidx.paging.common.android)
+    implementation(libs.paging.compose)
+
+    implementation(libs.coil.compose)
 
 }

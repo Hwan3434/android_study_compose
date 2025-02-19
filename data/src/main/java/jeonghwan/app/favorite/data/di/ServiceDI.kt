@@ -1,6 +1,7 @@
 package jeonghwan.app.favorite.data.di
 
 import android.app.Application
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -76,8 +77,8 @@ object KakaoNetworkModule {
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache)
-            .addInterceptor(authInterceptor)
             .addInterceptor(cacheInterceptor)
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
     }

@@ -2,20 +2,21 @@ package jeonghwan.app.favorite.ui.screen.search
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import coil.compose.AsyncImage
 import jeonghwan.app.favorite.domain.model.ContentEntity
-import jeonghwan.app.favorite.domain.model.ImageEntity
 import jeonghwan.app.favorite.ui.common.ui.SearchBar
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.Month
 import timber.log.Timber
 
 
@@ -24,69 +25,59 @@ fun SearchScreen(
     searchViewModel: SearchViewModel = hiltViewModel()
 ) {
     val uiState by searchViewModel.uiState.collectAsState()
+    val lazyPagingItems = searchViewModel.pagingData.collectAsLazyPagingItems()
 
     SearchUiScreen(
         query = uiState.query,
-        results = uiState.results,
-        isLoading = uiState.isLoading,
-        errorMessage = uiState.errorMessage,
+        lazyPagingItems = lazyPagingItems,
         onQueryChange = { searchViewModel.updateQuery(it) },
-        onSearch = { searchViewModel.performSearch() }
     )
 }
 
 @Composable
 fun SearchUiScreen(
     query: String,
-    results: List<ContentEntity>,
-    isLoading: Boolean,
-    errorMessage: String?,
+    lazyPagingItems: LazyPagingItems<ContentEntity>,
     onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit
 ) {
-    // 예시 UI 구성
-    Column(modifier = Modifier.padding(16.dp)) {
-        // 검색어 입력 및 검색 버튼 등
-        // TextField, Button 등을 배치
-        // 예시:
-        SearchBar(
-            hint = "아서라"
-        ) {
-            Timber.d("입력값 : $it")
+    Timber.d("lazyPagingItems.itemCount :: ${lazyPagingItems.itemCount}")
+    Column {
+        SearchBar {
+            Timber.d("SearchBar: $it")
+            onQueryChange(it)
         }
-        if (isLoading) {
-            Text("Loading...", color = Color.Gray)
-        }
-        errorMessage?.let {
-            Text("Error: $it", color = Color.Red)
-        }
-        // 결과 표시
-        results.forEach { result ->
-            Text(text = result.toString())
+
+        // 검색 결과 리스트 (PagingData 사용)
+        LazyColumn {
+            items(count = lazyPagingItems.itemCount) { index ->
+                lazyPagingItems[index]?.let { item ->
+                    // ContentEntity를 렌더링하는 Composable (예: Text)
+
+                    AsyncImage(
+                        modifier = Modifier,
+                        model = item.getThumbnailUrl(),
+                        contentDescription = "thumbnail",
+                    )
+                }
+            }
+
+            // 추가 로딩 상태에 따른 UI 처리
+            lazyPagingItems.apply {
+                when (loadState.append) {
+                    is androidx.paging.LoadState.Loading -> {
+                        item {
+                            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                        }
+                    }
+                    is androidx.paging.LoadState.Error -> {
+                        item {
+                            Text("Error loading more items", modifier = Modifier.padding(16.dp))
+                        }
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 }
 
-@Preview
-@Composable
-fun PreviewSearchScreen() {
-    SearchUiScreen(
-        query = "Hello",
-        results = listOf(
-            ImageEntity(
-                collection = "Collection",
-                thumbnail = "Thumbnail",
-                imageUrl = "ImageUrl",
-                width = 100,
-                height = 100,
-                displaySiteName = "SiteName",
-                docUrl = "DocUrl",
-                dateTime = LocalDateTime(2025, Month.FEBRUARY, 17, 10, 0, 0)
-            )
-        ),
-        isLoading = false,
-        errorMessage = null,
-        onQueryChange = {},
-        onSearch = {}
-    )
-}
