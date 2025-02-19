@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.ui.theme.root
+package jeonghwan.app.favorite.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding

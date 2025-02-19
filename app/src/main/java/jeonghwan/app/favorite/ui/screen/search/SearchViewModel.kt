@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.ui.theme.root.search
+package jeonghwan.app.favorite.ui.screen.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,10 +27,19 @@ class SearchViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
         viewModelScope.launch {
             val result = contentUseCase.getContent(QueryEntity(query = _uiState.value.query, sort = QuerySort.ACCURACY, page = 1, size = 10))
-            _uiState.value = if (result.isSuccess) {
-                _uiState.value.copy(results = result.getOrDefault(emptyList()), isLoading = false)
-            } else {
-                _uiState.value.copy(isLoading = false, errorMessage = result.exceptionOrNull()?.message)
+            _uiState.value = when {
+                result.isSuccess -> _uiState.value.copy(
+                    results = result.getOrDefault(emptyList()),
+                    isLoading = false
+                )
+                result.isFailure -> _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = result.exceptionOrNull()?.message
+                )
+                else -> _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Unknown error"
+                )
             }
         }
     }

@@ -1,8 +1,7 @@
-package jeonghwan.app.favorite.ui.theme.root.search
+package jeonghwan.app.favorite.ui.screen.search
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,8 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
+import jeonghwan.app.favorite.ui.common.ui.SearchBar
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
+import timber.log.Timber
 
 
 @Composable
@@ -48,9 +49,10 @@ fun SearchUiScreen(
         // 검색어 입력 및 검색 버튼 등
         // TextField, Button 등을 배치
         // 예시:
-        Text("Search: $query")
-        Button(onClick = { onSearch() }) {
-            Text("Search")
+        SearchBar(
+            hint = "아서라"
+        ) {
+            Timber.d("입력값 : $it")
         }
         if (isLoading) {
             Text("Loading...", color = Color.Gray)

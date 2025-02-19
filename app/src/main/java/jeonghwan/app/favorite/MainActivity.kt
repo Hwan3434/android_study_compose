@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
 import jeonghwan.app.favorite.ui.theme.FavoriteTheme
-import jeonghwan.app.favorite.ui.theme.root.RootScreen
+import jeonghwan.app.favorite.ui.screen.RootScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

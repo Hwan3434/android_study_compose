@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.ui.theme.root.search
+package jeonghwan.app.favorite.ui.screen.search
 
 import jeonghwan.app.favorite.domain.model.ContentEntity
 
