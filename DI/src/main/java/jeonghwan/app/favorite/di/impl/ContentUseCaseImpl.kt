@@ -3,8 +3,8 @@ package jeonghwan.app.favorite.di.impl
 import jeonghwan.app.favorite.domain.repository.ImageRepositoryInterface
 import jeonghwan.app.favorite.domain.repository.MovieRepositoryInterface
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
-import jeonghwan.app.favorite.entitymodel.ContentEntity
-import jeonghwan.app.favorite.entitymodel.QueryEntity
+import jeonghwan.app.favorite.domain.model.ContentEntity
+import jeonghwan.app.favorite.domain.model.QueryEntity
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 

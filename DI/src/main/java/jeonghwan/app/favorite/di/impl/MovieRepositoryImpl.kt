@@ -3,8 +3,8 @@ package jeonghwan.app.favorite.di.impl
 import jeonghwan.app.favorite.data.datasource.KakaoDatasource
 import jeonghwan.app.favorite.di.common.toEntity
 import jeonghwan.app.favorite.domain.repository.MovieRepositoryInterface
-import jeonghwan.app.favorite.entitymodel.MovieEntity
-import jeonghwan.app.favorite.entitymodel.QueryEntity
+import jeonghwan.app.favorite.domain.model.MovieEntity
+import jeonghwan.app.favorite.domain.model.QueryEntity
 
 class MovieRepositoryImpl(
     private val kakaoDatasource: KakaoDatasource

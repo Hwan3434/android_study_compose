@@ -3,8 +3,8 @@ package jeonghwan.app.favorite.di.impl
 import jeonghwan.app.favorite.data.datasource.KakaoDatasource
 import jeonghwan.app.favorite.di.common.toEntity
 import jeonghwan.app.favorite.domain.repository.ImageRepositoryInterface
-import jeonghwan.app.favorite.entitymodel.ImageEntity
-import jeonghwan.app.favorite.entitymodel.QueryEntity
+import jeonghwan.app.favorite.domain.model.ImageEntity
+import jeonghwan.app.favorite.domain.model.QueryEntity
 
 class ImageRepositoryImpl(
     private val kakaoDatasource: KakaoDatasource
@@ -21,6 +21,7 @@ class ImageRepositoryImpl(
             val imageEntities = response.documents.map { it.toEntity() }
             Result.success(imageEntities)
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure(e)
         }
     }

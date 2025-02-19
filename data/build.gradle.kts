@@ -7,6 +7,10 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val properties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
 android {
     namespace = "jeonghwan.app.favorite.data"
     compileSdk = 35
@@ -17,11 +21,8 @@ android {
 
     defaultConfig {
         minSdk = 26
-        val properties = Properties().apply {
-            load(rootProject.file("local.properties").inputStream())
-        }
-        val restApiKey = properties.getProperty("kakao_api_key", "none")
 
+        val restApiKey = properties.getProperty("kakao_api_key", "none")
         buildConfigField("String", "KAKAO_API_KEY", "\"$restApiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

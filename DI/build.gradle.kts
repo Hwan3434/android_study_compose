@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    kotlin("kapt")
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -35,7 +37,6 @@ android {
 dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":entityModel"))
     implementation(project(":dataModel"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -45,6 +46,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.kotlinx.datetime)
+
+    // hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
     // test
     testImplementation(libs.mockk)

@@ -16,7 +16,6 @@
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/dataModel" />
             <option value="$PROJECT_DIR$/domain" />
-            <option value="$PROJECT_DIR$/entityModel" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

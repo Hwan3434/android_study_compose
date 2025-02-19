@@ -2,9 +2,16 @@ package jeonghwan.app.favorite.di.common
 
 import jeonghwan.app.favorite.datamodel.ImageDocumentModel
 import jeonghwan.app.favorite.datamodel.MovieDocumentModel
-import jeonghwan.app.favorite.entitymodel.ImageEntity
-import jeonghwan.app.favorite.entitymodel.MovieEntity
+import jeonghwan.app.favorite.domain.model.ImageEntity
+import jeonghwan.app.favorite.domain.model.MovieEntity
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+
+fun String.toLocalDateTime2(): LocalDateTime {
+    return Instant.parse(this).toLocalDateTime(TimeZone.currentSystemDefault())
+}
 
 fun ImageDocumentModel.toEntity(): ImageEntity {
     return ImageEntity(
@@ -15,7 +22,7 @@ fun ImageDocumentModel.toEntity(): ImageEntity {
         height = height,
         displaySiteName = displaySiteName,
         docUrl = docUrl,
-        dateTime = dateTime.toLocalDateTime()
+        dateTime = dateTime.toLocalDateTime2()
     )
 }
 
@@ -26,7 +33,7 @@ fun MovieDocumentModel.toEntity(): MovieEntity {
         playTime = playTime,
         thumbnail = thumbnail,
         url = url,
-        dateTime = dateTime.toLocalDateTime(),
+        dateTime = dateTime.toLocalDateTime2(),
         author = author
     )
 }

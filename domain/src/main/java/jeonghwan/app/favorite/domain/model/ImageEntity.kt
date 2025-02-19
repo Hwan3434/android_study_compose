@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.entitymodel
+package jeonghwan.app.favorite.domain.model
 
 import kotlinx.datetime.LocalDateTime
 
