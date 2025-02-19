@@ -12,6 +12,6 @@ kotlin {
     }
 }
 dependencies {
-    implementation(project(":entityModel"))
     implementation(project(":dataModel"))
+    implementation(libs.kotlinx.datetime)
 }

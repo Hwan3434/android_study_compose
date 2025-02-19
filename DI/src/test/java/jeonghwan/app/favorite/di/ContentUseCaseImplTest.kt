@@ -5,10 +5,10 @@ import io.mockk.mockk
 import jeonghwan.app.favorite.di.impl.ContentUseCaseImpl
 import jeonghwan.app.favorite.domain.repository.ImageRepositoryInterface
 import jeonghwan.app.favorite.domain.repository.MovieRepositoryInterface
-import jeonghwan.app.favorite.entitymodel.ImageEntity
-import jeonghwan.app.favorite.entitymodel.MovieEntity
-import jeonghwan.app.favorite.entitymodel.QueryEntity
-import jeonghwan.app.favorite.entitymodel.QuerySort
+import jeonghwan.app.favorite.domain.model.ImageEntity
+import jeonghwan.app.favorite.domain.model.MovieEntity
+import jeonghwan.app.favorite.domain.model.QueryEntity
+import jeonghwan.app.favorite.domain.model.QuerySort
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime

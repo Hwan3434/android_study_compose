@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.entitymodel
+package jeonghwan.app.favorite.domain.model
 
 enum class QuerySort {
     ACCURACY, // 정확도

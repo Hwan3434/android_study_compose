@@ -8,8 +8,8 @@ import jeonghwan.app.favorite.datamodel.MetaModel
 import jeonghwan.app.favorite.datamodel.MovieDocumentModel
 import jeonghwan.app.favorite.di.impl.ImageRepositoryImpl
 import jeonghwan.app.favorite.di.impl.MovieRepositoryImpl
-import jeonghwan.app.favorite.entitymodel.QueryEntity
-import jeonghwan.app.favorite.entitymodel.QuerySort
+import jeonghwan.app.favorite.domain.model.QueryEntity
+import jeonghwan.app.favorite.domain.model.QuerySort
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*

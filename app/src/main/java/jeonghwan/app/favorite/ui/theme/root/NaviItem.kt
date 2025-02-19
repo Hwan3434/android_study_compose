@@ -1,6 +1,5 @@
 package jeonghwan.app.favorite.ui.theme.root
 
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -13,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import jeonghwan.app.favorite.R
+import jeonghwan.app.favorite.ui.theme.root.favorite.FavoriteScreen
+import jeonghwan.app.favorite.ui.theme.root.search.SearchScreen
 
 
 sealed class NaviItem(val route: String, private val titleResId: Int, val icon: ImageVector) {

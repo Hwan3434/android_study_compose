@@ -12,7 +12,6 @@ kotlin {
     }
 }
 
-
 dependencies {
     implementation(libs.gson)
 }

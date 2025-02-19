@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.entitymodel
+package jeonghwan.app.favorite.domain.model
 
 data class QueryEntity(
     val query: String, // 검색어
