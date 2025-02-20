@@ -15,7 +15,7 @@ kotlinxDatetime = "0.4.0"
 
 
 retrofit = "2.9.0"
-okhttp = "4.10.0"
+okhttp = "4.11.0"
 gson = "2.10.1"
 
 hiltAndroidGradlePlugin = "2.49"
@@ -28,15 +28,12 @@ kotlinx-coroutines = "1.7.3"
 timber = "5.0.1"
 pagingCommonAndroid = "3.3.6"
 
-coreTesting = "2.1.0"
-kotlinxCoroutinesTest = "1.5.2"
+coreTesting = "2.2.0"
 
 coilCompose = "2.4.0"
 
 
-
-
-
+room = "2.6.1"
 
 
 [libraries]
@@ -88,6 +85,13 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 # Network Image Viewer
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 
+
+# Room
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -97,5 +101,3 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 
 # hilt
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroidGradlePlugin" }
-
-

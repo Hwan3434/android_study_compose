@@ -62,7 +62,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.timber)
-
     implementation(libs.kotlinx.datetime)
 
     // hilt
@@ -84,4 +83,8 @@ dependencies {
     // network image
     implementation(libs.coil.compose)
 
+    // room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 }

@@ -13,7 +13,7 @@ data class ImageEntity(
     val height: Int,
     val displaySiteName: String,
     val docUrl: String,
-    override val dateTime: LocalDateTime
+    override val dateTime: LocalDateTime,
 ) : ContentEntity(
     dateTime = dateTime
 ) {

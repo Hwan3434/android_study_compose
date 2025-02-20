@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +33,7 @@ fun ThumbnailCard(
     thumbnailUrl: String,
     date: String,
     time: String,
+    isFavorite: Boolean,
     onClick: () -> Unit
 ) {
     Card(
@@ -55,6 +60,19 @@ fun ThumbnailCard(
                 contentScale = ContentScale.Crop, // 이미지를 Crop 해서 보여줌
                 contentDescription = "thumbnail",
             )
+
+            if (isFavorite) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "favorite",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp),
+                    tint = Color.Yellow
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -80,6 +98,7 @@ fun ThumbnailCardPreview() {
         thumbnailUrl = "https://example.com/image.jpg",
         date = "2025-02-20",
         time = "12:00 PM",
+        isFavorite = false,
         onClick = { /* 클릭 시 동작 */ }
     )
 }
