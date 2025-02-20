@@ -51,6 +51,11 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
+    // room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
     // test
     testImplementation(libs.mockk)
     implementation(libs.kotlinx.coroutines.test)

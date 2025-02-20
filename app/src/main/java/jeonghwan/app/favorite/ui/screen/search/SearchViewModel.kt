@@ -8,7 +8,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
+import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.domain.model.QuerySort
+import jeonghwan.app.favorite.domain.repository.FavoriteDao
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -19,11 +21,13 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val contentUseCase: ContentUseCaseInterface
+    private val contentUseCase: ContentUseCaseInterface,
+    private val dao: FavoriteDao
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
@@ -38,13 +42,16 @@ class SearchViewModel @Inject constructor(
             Pager(
                 config = PagingConfig(pageSize = 10, enablePlaceholders = false),
                 pagingSourceFactory = {
-                    ContentPagingSource(contentUseCase, ContentPagingKey(
-                        query = query,
-                        imagePage = 1,
-                        moviePage = 1,
-                        sort = QuerySort.ACCURACY,
-                        size = 10
-                    ))
+                    ContentPagingSource(
+                        contentUseCase,
+                        ContentPagingKey(
+                            query = query,
+                            imagePage = 1,
+                            moviePage = 1,
+                            sort = QuerySort.ACCURACY,
+                            size = 10
+                        ),
+                    )
                 }
             ).flow
         }
@@ -53,5 +60,28 @@ class SearchViewModel @Inject constructor(
     // 사용자 이벤트 처리를 위한 함수 예시
     fun updateQuery(newQuery: String) {
         _uiState.value = _uiState.value.copy(query = newQuery)
+    }
+
+    fun toggleFavorite(contentEntity: ContentEntity) {
+        viewModelScope.launch {
+            if (isFavorite(contentEntity)) {
+                dao.deleteByThumbnailUrl(contentEntity.getThumbnailUrl())
+            } else {
+                dao.insert(
+                    FavoriteEntity(
+                        thumbnail = contentEntity.getThumbnailUrl(),
+                        dateTime = contentEntity.dateTime
+                    )
+                )
+            }
+        }
+    }
+
+    // 즐겨찾기 상태를 Flow로 수집
+    val favoriteFlow: Flow<Set<String>> = dao.getFavorites()
+        .map { favorites -> favorites.map { it.getThumbnailUrl() }.toSet() }
+
+    private suspend fun isFavorite(contentEntity: ContentEntity): Boolean {
+        return dao.isThumbnailUrlExists(contentEntity.getThumbnailUrl()) > 0
     }
 }

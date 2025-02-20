@@ -12,8 +12,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import jeonghwan.app.favorite.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,7 +24,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    hint: String = "검색어를 입력하세요.",
+    hint: String = stringResource(R.string.search_edit_placeholder),
     duration: Long = 1000L,
     onDebounce: (String) -> Unit
 ) {
