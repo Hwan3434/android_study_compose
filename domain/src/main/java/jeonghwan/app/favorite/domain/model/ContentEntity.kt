@@ -2,6 +2,9 @@ package jeonghwan.app.favorite.domain.model
 
 import kotlinx.datetime.LocalDateTime
 
+/**
+ * GridView에서 보여질 데이터
+ */
 abstract class ContentEntity(
     open val dateTime: LocalDateTime
 ) {

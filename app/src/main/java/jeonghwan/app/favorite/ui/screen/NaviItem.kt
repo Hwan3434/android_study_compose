@@ -27,7 +27,9 @@ sealed class NaviItem(val route: String, private val titleResId: Int, val icon: 
         override fun GetScreen(
             modifier: Modifier,
         ) {
-            SearchScreen()
+            SearchScreen(
+                modifier = modifier
+            )
         }
     }
 

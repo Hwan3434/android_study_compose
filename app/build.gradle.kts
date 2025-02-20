@@ -72,13 +72,16 @@ dependencies {
 
     // test
     testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
     implementation(libs.kotlinx.coroutines.test)
+    implementation(libs.core.testing)
     androidTestImplementation(libs.mockk.android)
 
     // paing
     implementation(libs.androidx.paging.common.android)
     implementation(libs.paging.compose)
 
+    // network image
     implementation(libs.coil.compose)
 
 }

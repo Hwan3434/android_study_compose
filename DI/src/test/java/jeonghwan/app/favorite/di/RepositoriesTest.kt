@@ -8,7 +8,8 @@ import jeonghwan.app.favorite.datamodel.MetaModel
 import jeonghwan.app.favorite.datamodel.MovieDocumentModel
 import jeonghwan.app.favorite.di.impl.ImageRepositoryImpl
 import jeonghwan.app.favorite.di.impl.MovieRepositoryImpl
-import jeonghwan.app.favorite.domain.model.QueryEntity
+import jeonghwan.app.favorite.domain.model.ContentQueryEntity
+import jeonghwan.app.favorite.domain.model.PagingQuery
 import jeonghwan.app.favorite.domain.model.QuerySort
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -42,22 +43,23 @@ class RepositoriesTest {
         height = 480,
         displaySiteName = "네이버블로그",
         docUrl = "http://blog.naver.com/abc",
-        dateTime = "2021-08-01T12:34:56"
+        dateTime = "2021-08-01T12:34:56Z"
     )
 
     val dummyMovieDocument = MovieDocumentModel(
         title = "영화 제목",
         thumbnail = "https://search3.kakaocdn.net/argon/0x200_85_hr/8x1bJ9J9J9J",
         url = "http://movie.naver.com/abc",
-        dateTime = "2021-08-01T12:34:56",
+        dateTime = "2021-08-01T12:34:56Z",
         author = "작가",
         playTime = 120
     )
 
-    private val dummyQuery = QueryEntity(
+    private val dummyQuery = ContentQueryEntity(
         query = "kotlin",
         sort = QuerySort.ACCURACY,
-        page = 1,
+        moviePage = 1,
+        imagePage = 1,
         size = 10
     )
 
@@ -76,7 +78,7 @@ class RepositoriesTest {
             kakaoDatasource.requestImage(
                 query = dummyQuery.query,
                 sort = dummyQuery.sort.name,
-                page = dummyQuery.page,
+                page = dummyQuery.imagePage,
                 size = dummyQuery.size
             )
         } returns KakaoModel(
@@ -84,14 +86,19 @@ class RepositoriesTest {
             documents = listOf(dummyImageDocument)
         )
 
-        val result = imageRepository.getImage(dummyQuery)
+        val result = imageRepository.getImage(PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.imagePage,
+            size = dummyQuery.size
+        ))
 
         // 결과 검증: 성공 결과여야 하며, 변환된 문서 값이 올바른지 확인
         assertTrue(result.isSuccess)
         val imageEntities = result.getOrNull()
         assertNotNull(imageEntities)
-        assertEquals(1, imageEntities!!.size)
-        assertEquals(dummyImageDocument.imageUrl, imageEntities.first().imageUrl)
+        assertEquals(1, imageEntities!!.data.size)
+        assertEquals(dummyImageDocument.imageUrl, imageEntities.data.first().imageUrl)
     }
 
     @Test
@@ -101,7 +108,7 @@ class RepositoriesTest {
             kakaoDatasource.requestMovie(
                 query = dummyQuery.query,
                 sort = dummyQuery.sort.name,
-                page = dummyQuery.page,
+                page = dummyQuery.moviePage,
                 size = dummyQuery.size
             )
         } returns KakaoModel(
@@ -109,14 +116,19 @@ class RepositoriesTest {
             documents = listOf(dummyMovieDocument)
         )
 
-        val result = movieRepository.getMovie(dummyQuery)
+        val result = movieRepository.getMovie(PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.moviePage,
+            size = dummyQuery.size
+        ))
 
         // 결과 검증: 성공 결과여야 하며, 변환된 문서 값이 올바른지 확인
         assertTrue(result.isSuccess)
         val movieEntities = result.getOrNull()
         assertNotNull(movieEntities)
-        assertEquals(1, movieEntities!!.size)
-        assertEquals(dummyMovieDocument.title, movieEntities.first().title)
+        assertEquals(1, movieEntities!!.data.size)
+        assertEquals(dummyMovieDocument.title, movieEntities.data.first().title)
     }
 
     @Test
@@ -127,12 +139,17 @@ class RepositoriesTest {
             kakaoDatasource.requestImage(
                 query = dummyQuery.query,
                 sort = dummyQuery.sort.name,
-                page = dummyQuery.page,
+                page = dummyQuery.imagePage,
                 size = dummyQuery.size
             )
         } throws Exception(errorMessage)
 
-        val result = imageRepository.getImage(dummyQuery)
+        val result = imageRepository.getImage(PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.imagePage,
+            size = dummyQuery.size
+        ))
 
         // 결과 검증: 실패 결과, 에러 메시지가 "Network error"이어야 함
         assertTrue(result.isFailure)
@@ -148,12 +165,17 @@ class RepositoriesTest {
             kakaoDatasource.requestMovie(
                 query = dummyQuery.query,
                 sort = dummyQuery.sort.name,
-                page = dummyQuery.page,
+                page = dummyQuery.moviePage,
                 size = dummyQuery.size
             )
         } throws Exception(errorMessage)
 
-        val result = movieRepository.getMovie(dummyQuery)
+        val result = movieRepository.getMovie(PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.moviePage,
+            size = dummyQuery.size
+        ))
 
         // 결과 검증: 실패 결과, 에러 메시지가 "Network error"이어야 함
         assertTrue(result.isFailure)

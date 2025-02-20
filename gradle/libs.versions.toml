@@ -28,7 +28,14 @@ kotlinx-coroutines = "1.7.3"
 timber = "5.0.1"
 pagingCommonAndroid = "3.3.6"
 
+coreTesting = "2.1.0"
+kotlinxCoroutinesTest = "1.5.2"
+
 coilCompose = "2.4.0"
+
+
+
+
 
 
 
@@ -68,6 +75,8 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
+
 
 # kotlinx-datetime
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
@@ -78,7 +87,6 @@ paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pag
 
 # Network Image Viewer
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

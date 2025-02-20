@@ -5,11 +5,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
-import jeonghwan.app.favorite.domain.model.QueryEntity
 import jeonghwan.app.favorite.domain.model.QuerySort
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,14 +31,20 @@ class SearchViewModel @Inject constructor(
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val pagingData: Flow<PagingData<ContentEntity>> = _uiState
-        .map { it.query }  // 검색어만 추출
+        .map { it.query }
         .debounce(500L)
         .distinctUntilChanged()
         .flatMapLatest { query ->
             Pager(
                 config = PagingConfig(pageSize = 10, enablePlaceholders = false),
                 pagingSourceFactory = {
-                    ContentPagingSource(contentUseCase, query)
+                    ContentPagingSource(contentUseCase, ContentPagingKey(
+                        query = query,
+                        imagePage = 1,
+                        moviePage = 1,
+                        sort = QuerySort.ACCURACY,
+                        size = 10
+                    ))
                 }
             ).flow
         }
