@@ -1,9 +1,13 @@
 package jeonghwan.app.favorite.ui.screen.favorite
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -30,15 +34,20 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteUiScreen(
+    modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<FavoriteEntity>,
     favoriteSet: Set<String>,
     onFavoriteClick: (ContentEntity) -> Unit
 ) {
-    LazyPagingGrid(
-        lazyPagingItems = lazyPagingItems,
-        selectedThumbnailUrl = favoriteSet,
-        onClick = onFavoriteClick
-    )
+    Box(
+        modifier = modifier.padding(horizontal = 16.dp),
+    ){
+        LazyPagingGrid(
+            lazyPagingItems = lazyPagingItems,
+            selectedThumbnailUrl = favoriteSet,
+            onClick = onFavoriteClick
+        )
+    }
 }
 
 
