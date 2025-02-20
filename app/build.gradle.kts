@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,7 +72,16 @@ dependencies {
 
     // test
     testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
     implementation(libs.kotlinx.coroutines.test)
+    implementation(libs.core.testing)
     androidTestImplementation(libs.mockk.android)
+
+    // paing
+    implementation(libs.androidx.paging.common.android)
+    implementation(libs.paging.compose)
+
+    // network image
+    implementation(libs.coil.compose)
 
 }

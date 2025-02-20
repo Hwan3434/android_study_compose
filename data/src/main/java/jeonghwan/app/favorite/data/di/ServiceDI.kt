@@ -13,15 +13,15 @@ import jeonghwan.app.favorite.data.common.Constants
 import jeonghwan.app.favorite.data.common.KakaoAuthorizationInterceptor
 import jeonghwan.app.favorite.data.datasource.KakaoDatasource
 import jeonghwan.app.favorite.data.kakao.KakaoService
-import java.io.File
-import javax.inject.Singleton
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -76,8 +76,8 @@ object KakaoNetworkModule {
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache)
-            .addInterceptor(authInterceptor)
             .addInterceptor(cacheInterceptor)
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
     }

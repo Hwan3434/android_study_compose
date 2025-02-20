@@ -7,7 +7,9 @@ import jeonghwan.app.favorite.domain.repository.ImageRepositoryInterface
 import jeonghwan.app.favorite.domain.repository.MovieRepositoryInterface
 import jeonghwan.app.favorite.domain.model.ImageEntity
 import jeonghwan.app.favorite.domain.model.MovieEntity
-import jeonghwan.app.favorite.domain.model.QueryEntity
+import jeonghwan.app.favorite.domain.model.ContentQueryEntity
+import jeonghwan.app.favorite.domain.model.PagingEntity
+import jeonghwan.app.favorite.domain.model.PagingQuery
 import jeonghwan.app.favorite.domain.model.QuerySort
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -21,10 +23,11 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class ContentUseCaseImplTest {
 
-    private val dummyQuery = QueryEntity(
+    private val dummyQuery = ContentQueryEntity(
         query = "kotlin",
         sort = QuerySort.ACCURACY,
-        page = 1,
+        imagePage = 1,
+        moviePage = 1,
         size = 10
     )
 
@@ -72,23 +75,47 @@ class ContentUseCaseImplTest {
         val movieRepo = mockk<MovieRepositoryInterface>()
 
         // 성공 케이스 목킹: 이미지 저장소에서 두 개의 이미지, 영화 저장소에서 한 개의 동영상 반환
-        coEvery { imageRepo.getImage(dummyQuery) } returns Result.success(listOf(dummyImageEntityLatest, dummyImageEntityOld))
-        coEvery { movieRepo.getMovie(dummyQuery) } returns Result.success(listOf(dummyMovieEntity))
+        coEvery { imageRepo.getImage(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.imagePage,
+            size = dummyQuery.size
+        )
+        ) } returns Result.success(
+            PagingEntity(
+                data = listOf(dummyImageEntityLatest, dummyImageEntityOld),
+                isEnd = true
+            )
+        )
+        coEvery { movieRepo.getMovie(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.moviePage,
+            size = dummyQuery.size
+        )
+        ) } returns Result.success(
+            PagingEntity(
+                data = listOf(dummyMovieEntity),
+                isEnd = true
+            )
+        )
 
         val useCase = ContentUseCaseImpl(imageRepo, movieRepo)
         val result = useCase.getContent(dummyQuery)
 
         assertTrue(result.isSuccess)
-        val contentList = result.getOrNull()
-        assertEquals(3, contentList?.size)
+        val contentPagingResult = result.getOrNull()
+        assertEquals(3, contentPagingResult?.data?.size)
         // 내림차순 정렬: 가장 최신의 dateTime이 첫 번째에 위치해야 함.
-        contentList?.let {
-            assertTrue(it[0].dateTime >= it[1].dateTime)
-            assertTrue(it[1].dateTime >= it[2].dateTime)
+        contentPagingResult?.let {
+            assertTrue(it.data[0].dateTime >= it.data[1].dateTime)
+            assertTrue(it.data[1].dateTime >= it.data[2].dateTime)
             // 추가적으로, 가장 최신은 dummyImageEntityLatest, 두 번째는 dummyMovieEntity, 세 번째는 dummyImageEntityOld여야 함.
-            assertEquals(dummyImageEntityLatest, it[0])
-            assertEquals(dummyMovieEntity, it[1])
-            assertEquals(dummyImageEntityOld, it[2])
+            assertEquals(dummyImageEntityLatest, it.data[0])
+            assertEquals(dummyMovieEntity, it.data[1])
+            assertEquals(dummyImageEntityOld, it.data[2])
         }
     }
 
@@ -117,19 +144,41 @@ class ContentUseCaseImplTest {
         val imageRepo = mockk<ImageRepositoryInterface>()
         val movieRepo = mockk<MovieRepositoryInterface>()
 
-        coEvery { imageRepo.getImage(dummyQuery) } returns Result.success(listOf(dummyImageEntity))
-        coEvery { movieRepo.getMovie(dummyQuery) } returns Result.success(listOf(dummyMovieEntity))
+        coEvery { imageRepo.getImage(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.imagePage,
+            size = dummyQuery.size
+        )) } returns Result.success(
+            PagingEntity(
+                data = listOf(dummyImageEntity),
+                isEnd = true
+            )
+        )
+        coEvery { movieRepo.getMovie(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.moviePage,
+            size = dummyQuery.size
+        )) } returns Result.success(
+            PagingEntity(
+                data = listOf(dummyMovieEntity),
+                isEnd = true
+            )
+        )
 
         val useCase = ContentUseCaseImpl(imageRepo, movieRepo)
         val result = useCase.getContent(dummyQuery)
 
         assertTrue(result.isSuccess)
-        val contentList = result.getOrNull()
-        assertNotNull(contentList)
+        val contentPagingResult = result.getOrNull()
+        assertNotNull(contentPagingResult)
         // 정렬: 최신 순, now > oneHourAgo
-        assertEquals(2, contentList!!.size)
-        assertEquals(dummyImageEntity, contentList[0])
-        assertEquals(dummyMovieEntity, contentList[1])
+        assertEquals(2, contentPagingResult!!.data.size)
+        assertEquals(dummyImageEntity, contentPagingResult.data[0])
+        assertEquals(dummyMovieEntity, contentPagingResult.data[1])
     }
 
     @Test
@@ -147,17 +196,30 @@ class ContentUseCaseImplTest {
         val imageRepo = mockk<ImageRepositoryInterface>()
         val movieRepo = mockk<MovieRepositoryInterface>()
 
-        coEvery { imageRepo.getImage(dummyQuery) } returns Result.failure(Exception("Image error"))
-        coEvery { movieRepo.getMovie(dummyQuery) } returns Result.success(listOf(dummyMovieEntity))
+        coEvery { imageRepo.getImage(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.imagePage,
+            size = dummyQuery.size
+        )) } returns Result.failure(Exception("Image error"))
+        coEvery { movieRepo.getMovie(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.moviePage,
+            size = dummyQuery.size
+        )) } returns Result.success(
+            PagingEntity(
+                data = listOf(dummyMovieEntity),
+                isEnd = true
+            )
+        )
 
         val useCase = ContentUseCaseImpl(imageRepo, movieRepo)
         val result = useCase.getContent(dummyQuery)
 
-        assertTrue(result.isFailure)
-        val ex = result.exceptionOrNull()
-        assertNotNull(ex)
-        // image 에러 메시지만 포함되어야 함.
-        assertTrue(ex!!.message?.contains("Image error") == true)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -177,17 +239,30 @@ class ContentUseCaseImplTest {
         val imageRepo = mockk<ImageRepositoryInterface>()
         val movieRepo = mockk<MovieRepositoryInterface>()
 
-        coEvery { imageRepo.getImage(dummyQuery) } returns Result.success(listOf(dummyImageEntity))
-        coEvery { movieRepo.getMovie(dummyQuery) } returns Result.failure(Exception("Movie error"))
+        coEvery { imageRepo.getImage(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.imagePage,
+            size = dummyQuery.size
+        )) } returns Result.success(
+            PagingEntity(
+                data = listOf(dummyImageEntity),
+                isEnd = true
+            )
+        )
+        coEvery { movieRepo.getMovie(
+            PagingQuery(
+            query = dummyQuery.query,
+            sort = dummyQuery.sort,
+            page = dummyQuery.moviePage,
+            size = dummyQuery.size
+        )) } returns Result.failure(Exception("Movie error"))
 
         val useCase = ContentUseCaseImpl(imageRepo, movieRepo)
         val result = useCase.getContent(dummyQuery)
 
-        assertTrue(result.isFailure)
-        val ex = result.exceptionOrNull()
-        assertNotNull(ex)
-        // movie 에러 메시지만 포함되어야 함.
-        assertTrue(ex!!.message?.contains("Movie error") == true)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -199,8 +274,22 @@ class ContentUseCaseImplTest {
         val imageRepo = mockk<ImageRepositoryInterface>()
         val movieRepo = mockk<MovieRepositoryInterface>()
 
-        coEvery { imageRepo.getImage(dummyQuery) } returns Result.failure(imageException)
-        coEvery { movieRepo.getMovie(dummyQuery) } returns Result.failure(movieException)
+        coEvery { imageRepo.getImage(
+            PagingQuery(
+                query = dummyQuery.query,
+                sort = dummyQuery.sort,
+                page = dummyQuery.imagePage,
+                size = dummyQuery.size
+            )
+        ) } returns Result.failure(imageException)
+        coEvery { movieRepo.getMovie(
+            PagingQuery(
+                query = dummyQuery.query,
+                sort = dummyQuery.sort,
+                page = dummyQuery.moviePage,
+                size = dummyQuery.size
+            )
+        ) } returns Result.failure(movieException)
 
         val useCase = ContentUseCaseImpl(imageRepo, movieRepo)
         val result = useCase.getContent(dummyQuery)

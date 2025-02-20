@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.ui.theme.root
+package jeonghwan.app.favorite.ui.screen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import jeonghwan.app.favorite.R
-import jeonghwan.app.favorite.ui.theme.root.favorite.FavoriteScreen
-import jeonghwan.app.favorite.ui.theme.root.search.SearchScreen
+import jeonghwan.app.favorite.ui.screen.favorite.FavoriteScreen
+import jeonghwan.app.favorite.ui.screen.search.SearchScreen
 
 
 sealed class NaviItem(val route: String, private val titleResId: Int, val icon: ImageVector) {
@@ -27,7 +27,9 @@ sealed class NaviItem(val route: String, private val titleResId: Int, val icon: 
         override fun GetScreen(
             modifier: Modifier,
         ) {
-            SearchScreen()
+            SearchScreen(
+                modifier = modifier
+            )
         }
     }
 

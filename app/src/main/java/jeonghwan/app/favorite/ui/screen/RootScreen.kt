@@ -1,7 +1,8 @@
-package jeonghwan.app.favorite.ui.theme.root
+package jeonghwan.app.favorite.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TabRow
 import androidx.compose.runtime.Composable
@@ -24,6 +25,8 @@ fun RootScreen(
     val saveableStateHolder = rememberSaveableStateHolder()
 
     Scaffold(
+        modifier = modifier
+            .safeContentPadding(),
         bottomBar = {
             TabRow(
                 selectedTabIndex = tabs.indexOf(selectedTab),

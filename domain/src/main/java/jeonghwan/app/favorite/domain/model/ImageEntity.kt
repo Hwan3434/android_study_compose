@@ -2,6 +2,9 @@ package jeonghwan.app.favorite.domain.model
 
 import kotlinx.datetime.LocalDateTime
 
+/**
+ * Image Repository에서 반환하는 데이터
+ */
 data class ImageEntity(
     val collection: String,
     val thumbnail: String,
