@@ -14,8 +14,6 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import jeonghwan.app.favorite.ui.screen.search.SearchScreen
-
 
 private val naviItemsSaver = Saver<NaviItem, String>(
     save = { it.route },
