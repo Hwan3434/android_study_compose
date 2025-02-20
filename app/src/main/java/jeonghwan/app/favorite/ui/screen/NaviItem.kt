@@ -27,9 +27,7 @@ sealed class NaviItem(val route: String, private val titleResId: Int, val icon: 
         override fun GetScreen(
             modifier: Modifier,
         ) {
-            SearchScreen(
-                modifier = modifier
-            )
+            SearchScreen()
         }
     }
 
@@ -57,11 +55,3 @@ sealed class NaviItem(val route: String, private val titleResId: Int, val icon: 
         )
     }
 }
-
-val naviItemsSaver = Saver<NaviItem, String>(
-    save = { it.route },
-    restore = { route ->
-        val tabs = listOf(NaviItem.Search, NaviItem.Favorite)
-        tabs.find { it.route == route } ?: NaviItem.Search
-    }
-)
