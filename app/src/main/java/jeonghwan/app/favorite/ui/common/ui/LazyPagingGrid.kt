@@ -1,6 +1,7 @@
 package jeonghwan.app.favorite.ui.common.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,32 +13,50 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import jeonghwan.app.favorite.R
 import jeonghwan.app.favorite.domain.model.ContentEntity
+import jeonghwan.app.favorite.domain.model.ImageEntity
+import kotlinx.coroutines.flow.flowOf
+import java.time.LocalDateTime
 
+
+// 즐겨찾기 판단 여부
+fun <T : ContentEntity> Set<T>.containsThumbnailUrl(target: ContentEntity): Boolean {
+    return this.any { it.getThumbnail() == target.getThumbnail() }
+}
 
 @Composable
 fun <T : ContentEntity> LazyPagingGrid(
     lazyPagingItems: LazyPagingItems<T>,
-    favoriteSet: Set<String>,
-    onFavoriteClick: (T) -> Unit
+    compose: @Composable (T) -> Unit
 ) {
     if (lazyPagingItems.itemCount == 0) {
         EmptyView()
@@ -45,14 +64,31 @@ fun <T : ContentEntity> LazyPagingGrid(
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-
+    val touchModifier = Modifier.pointerInput(Unit) {
+        detectTapGestures {
+            keyboardController?.hide()
+        }
+    }
+    val scrollState = rememberLazyStaggeredGridState()
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (available.y != 0f) {
+                    keyboardController?.hide()
+                }
+                return Offset.Zero
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .then(touchModifier)
+            .nestedScroll(nestedScrollConnection)
     ){
 
         LazyVerticalStaggeredGrid(
+            state = scrollState,
             modifier = Modifier.weight(1f),
             columns = StaggeredGridCells.Fixed(2),
             verticalItemSpacing = 4.dp,
@@ -60,49 +96,54 @@ fun <T : ContentEntity> LazyPagingGrid(
         ) {
             items(lazyPagingItems.itemCount) { index ->
                 lazyPagingItems[index]?.let { item ->
-                    // UI 요소 표시
-                    val isFav = favoriteSet.contains(item.getThumbnailUrl())
-
-                    ThumbnailCard(
-                        thumbnailUrl = item.getThumbnailUrl(),
-                        date = item.getDate(),
-                        time = item.getTime(),
-                        isFavorite = isFav,
-                        onClick = {
-                            onFavoriteClick(item)
-                            keyboardController?.hide()
-                        }
-                    )
+                    compose(item)
                 }
             }
         }
 
         lazyPagingItems.apply {
             when (loadState.append) {
-                is androidx.paging.LoadState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                is LoadState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
 
-                is androidx.paging.LoadState.Error -> {
-                    Text("Error loading more items", modifier = Modifier.padding(16.dp))
+                is LoadState.Error -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            stringResource(R.string.data_error),
+                            color = Color.Red
+                        )
+                    }
                 }
 
-                is androidx.paging.LoadState.NotLoading -> {
+                is LoadState.NotLoading -> {
                     if (loadState.append.endOfPaginationReached) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            "모든 데이터를 조회했습니다.",
+                            stringResource(R.string.all_data_fetched_message),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(
                                     color = Color.LightGray,
                                     shape = RoundedCornerShape(8.dp)
-                                ) // 둥근 모서리 적용
+                                )
                                 .padding(16.dp),
                             textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold, // 볼드체
-                            fontSize = 18.sp, // 글자 크기 조정
-                            color = Color.DarkGray // 텍스트 색상
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = Color.DarkGray
                         )
                     }
                 }
@@ -125,7 +166,53 @@ private fun EmptyView() {
                 contentDescription = "No Data",
                 modifier = Modifier.size(64.dp)
             )
-            Text("데이터가 없습니다.", modifier = Modifier.padding(top = 8.dp))
+            Text(stringResource(R.string.data_not_found), modifier = Modifier.padding(top = 8.dp))
         }
+    }
+}
+
+// Preview for empty state
+@Preview(showBackground = true)
+@Composable
+fun PreviewEmptyLazyPagingGrid() {
+    LazyPagingGrid(
+        lazyPagingItems = flowOf(PagingData.empty<ImageEntity>()).collectAsLazyPagingItems(),
+    ) {
+        ThumbnailCard(
+            thumbnailUrl = "abc",
+            date = LocalDateTime.now().toString(),
+            time = LocalDateTime.now().toString(),
+            isFavorite = false,
+            onClick = {}
+        )
+    }
+}
+
+// Preview for populated state
+@Preview(showBackground = true)
+@Composable
+fun PreviewPopulatedLazyPagingGrid() {
+    val sampleItems = List(5) {
+        ImageEntity(
+            displaySiteName = "site $it",
+            imageUrl = "https://example.com/image_$it.jpg",
+            thumbnail = "https://example.com/image_$it.jpg",
+            width = 100,
+            height = 100,
+            docUrl = "https://example.com/doc_$it",
+            collection = "collection $it",
+            dateTime = 0L,
+        )
+    }
+    LazyPagingGrid(
+        lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
+    ) {
+        ThumbnailCard(
+            thumbnailUrl = "abc",
+            date = LocalDateTime.now().toString(),
+            time = LocalDateTime.now().toString(),
+            isFavorite = false,
+            onClick = {}
+        )
     }
 }

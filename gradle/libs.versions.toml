@@ -35,6 +35,9 @@ coilCompose = "2.4.0"
 
 room = "2.6.1"
 
+ksp = "2.0.21-1.0.27"
+
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -101,3 +104,4 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 
 # hilt
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroidGradlePlugin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

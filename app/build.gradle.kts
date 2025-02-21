@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -61,20 +62,19 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.timber)
-    implementation(libs.kotlinx.datetime)
-
-    // hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
-
     // test
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.android)
     implementation(libs.kotlinx.coroutines.test)
     implementation(libs.core.testing)
     androidTestImplementation(libs.mockk.android)
+
+    implementation(libs.timber)
+
+    // hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // paing
     implementation(libs.androidx.paging.common.android)
@@ -86,5 +86,5 @@ dependencies {
     // room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 }

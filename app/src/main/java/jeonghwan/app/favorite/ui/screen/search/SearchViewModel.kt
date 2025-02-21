@@ -10,8 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.domain.model.QuerySort
-import jeonghwan.app.favorite.domain.repository.FavoriteDao
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
+import jeonghwan.app.favorite.domain.usecase.FavoriteUsecaseInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val contentUseCase: ContentUseCaseInterface,
-    private val dao: FavoriteDao
+    private val favoriteUseCase: FavoriteUsecaseInterface
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
@@ -39,21 +40,26 @@ class SearchViewModel @Inject constructor(
         .debounce(500L)
         .distinctUntilChanged()
         .flatMapLatest { query ->
-            Pager(
-                config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-                pagingSourceFactory = {
-                    ContentPagingSource(
-                        contentUseCase,
-                        ContentPagingKey(
-                            query = query,
-                            imagePage = 1,
-                            moviePage = 1,
-                            sort = QuerySort.ACCURACY,
-                            size = 10
-                        ),
-                    )
-                }
-            ).flow
+            if (query.isBlank()) {
+                // 빈 쿼리일 경우 리스트 최초로 초기화
+                flowOf(PagingData.empty())
+            } else {
+                Pager(
+                    config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+                    pagingSourceFactory = {
+                        ContentPagingSource(
+                            contentUseCase,
+                            ContentPagingKey(
+                                query = query,
+                                imagePage = 1,
+                                moviePage = 1,
+                                sort = QuerySort.ACCURACY,
+                                size = 10
+                            ),
+                        )
+                    }
+                ).flow
+            }
         }
         .cachedIn(viewModelScope)
 
@@ -64,24 +70,21 @@ class SearchViewModel @Inject constructor(
 
     fun toggleFavorite(contentEntity: ContentEntity) {
         viewModelScope.launch {
-            if (isFavorite(contentEntity)) {
-                dao.deleteByThumbnailUrl(contentEntity.getThumbnailUrl())
+            if (favoriteUseCase.isFavorite(contentEntity.getThumbnail())) {
+                favoriteUseCase.remove(contentEntity.getThumbnail())
             } else {
-                dao.insert(
+                favoriteUseCase.insert(
                     FavoriteEntity(
-                        thumbnail = contentEntity.getThumbnailUrl(),
-                        dateTime = contentEntity.dateTime
+                        thumbnail = contentEntity.getThumbnail(),
+                        dateTime = contentEntity.getDateTime()
                     )
                 )
             }
         }
     }
 
-    // 즐겨찾기 상태를 Flow로 수집
-    val favoriteFlow: Flow<Set<String>> = dao.getFavorites()
-        .map { favorites -> favorites.map { it.getThumbnailUrl() }.toSet() }
+    // 즐겨찾기 상태를 수집
+    val favoriteFlow: Flow<Set<FavoriteEntity>> = favoriteUseCase.flowFavorites()
+        .map { favorites -> favorites.toSet() }
 
-    private suspend fun isFavorite(contentEntity: ContentEntity): Boolean {
-        return dao.isThumbnailUrlExists(contentEntity.getThumbnailUrl()) > 0
-    }
 }
