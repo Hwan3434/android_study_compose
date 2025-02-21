@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,21 +40,26 @@ class SearchViewModel @Inject constructor(
         .debounce(500L)
         .distinctUntilChanged()
         .flatMapLatest { query ->
-            Pager(
-                config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-                pagingSourceFactory = {
-                    ContentPagingSource(
-                        contentUseCase,
-                        ContentPagingKey(
-                            query = query,
-                            imagePage = 1,
-                            moviePage = 1,
-                            sort = QuerySort.ACCURACY,
-                            size = 10
-                        ),
-                    )
-                }
-            ).flow
+            if (query.isBlank()) {
+                // 빈 쿼리일 경우 리스트 최초로 초기화
+                flowOf(PagingData.empty())
+            } else {
+                Pager(
+                    config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+                    pagingSourceFactory = {
+                        ContentPagingSource(
+                            contentUseCase,
+                            ContentPagingKey(
+                                query = query,
+                                imagePage = 1,
+                                moviePage = 1,
+                                sort = QuerySort.ACCURACY,
+                                size = 10
+                            ),
+                        )
+                    }
+                ).flow
+            }
         }
         .cachedIn(viewModelScope)
 
@@ -64,13 +70,13 @@ class SearchViewModel @Inject constructor(
 
     fun toggleFavorite(contentEntity: ContentEntity) {
         viewModelScope.launch {
-            if (favoriteUseCase.isFavorite(contentEntity.getThumbnailUrl())) {
-                favoriteUseCase.remove(contentEntity.getThumbnailUrl())
+            if (favoriteUseCase.isFavorite(contentEntity.getThumbnail())) {
+                favoriteUseCase.remove(contentEntity.getThumbnail())
             } else {
                 favoriteUseCase.insert(
                     FavoriteEntity(
-                        thumbnail = contentEntity.getThumbnailUrl(),
-                        dateTime = contentEntity.localDateTime
+                        thumbnail = contentEntity.getThumbnail(),
+                        dateTime = contentEntity.getDateTime()
                     )
                 )
             }

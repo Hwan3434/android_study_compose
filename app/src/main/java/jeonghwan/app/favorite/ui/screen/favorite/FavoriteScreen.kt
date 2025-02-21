@@ -15,9 +15,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.ui.common.ui.LazyPagingGrid
+import jeonghwan.app.favorite.ui.common.ui.ThumbnailCard
+import jeonghwan.app.favorite.ui.common.ui.containsThumbnailUrl
 import kotlinx.coroutines.flow.flowOf
-import timber.log.Timber
-import java.time.LocalDateTime
 
 @Composable
 fun FavoriteScreen(
@@ -27,11 +27,12 @@ fun FavoriteScreen(
     val favoriteSet by viewModel.favoriteFlow.collectAsState(initial = emptySet())
 
     FavoriteUiScreen(
-        lazyPagingItems = pagedFavorites, // State의 값을 전달합니다.
+        lazyPagingItems = pagedFavorites,
         favoriteSet = favoriteSet,
         onFavoriteClick = viewModel::toggleFavorite
     )
 }
+
 
 @Composable
 fun FavoriteUiScreen(
@@ -40,15 +41,25 @@ fun FavoriteUiScreen(
     favoriteSet: Set<FavoriteEntity>,
     onFavoriteClick: (ContentEntity) -> Unit
 ) {
-    Timber.d("FavoriteUiScreen: ${lazyPagingItems.itemCount}")
     Box(
         modifier = modifier.padding(horizontal = 16.dp),
     ){
         LazyPagingGrid(
             lazyPagingItems = lazyPagingItems,
-            selectedThumbnailUrl = favoriteSet,
-            onClick = onFavoriteClick
-        )
+        ) { item ->
+            // UI 요소 표시
+            val isFav = favoriteSet.containsThumbnailUrl(item)
+
+            ThumbnailCard(
+                thumbnailUrl = item.getThumbnail(),
+                date = item.getDate(),
+                time = item.getTime(),
+                isFavorite = isFav,
+                onClick = {
+                    onFavoriteClick(item)
+                }
+            )
+        }
     }
 }
 
@@ -71,7 +82,7 @@ fun PreviewPopulatedLazyPagingGrid() {
     val sampleItems = List(5) {
         FavoriteEntity(
             thumbnail = "https://example.com/image_$it.jpg",
-            dateTime = LocalDateTime.now(),
+            dateTime = 0L,
         )
     }
     FavoriteUiScreen(

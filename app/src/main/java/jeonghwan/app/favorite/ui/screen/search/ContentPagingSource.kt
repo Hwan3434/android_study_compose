@@ -1,5 +1,6 @@
 package jeonghwan.app.favorite.ui.screen.search
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import jeonghwan.app.favorite.domain.model.ContentEntity
@@ -7,6 +8,7 @@ import jeonghwan.app.favorite.domain.model.ContentQueryEntity
 import jeonghwan.app.favorite.domain.model.QuerySort
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 
 data class ContentPagingKey(
     val query: String,
@@ -48,10 +50,8 @@ class ContentPagingSource(
                             isImageEnd = pagingResult.isImageLastPage,
                             isMovieEnd = pagingResult.isMovieLastPage)
                     }
-
                     val prevKey = if (key.imagePage == 1 && key.moviePage == 1) null
                         else key.copy(imagePage = key.imagePage - 1, moviePage = key.moviePage - 1)
-
                     LoadResult.Page(
                         data = pagingResult.data,
                         prevKey = prevKey,

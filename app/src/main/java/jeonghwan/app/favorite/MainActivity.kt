@@ -18,9 +18,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-
-
         setContent {
             FavoriteTheme {
                 RootScreen(
@@ -28,15 +25,5 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FavoriteTheme {
-        RootScreen(
-            modifier = Modifier.fillMaxSize().systemBarsPadding()
-        )
     }
 }

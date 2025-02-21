@@ -16,8 +16,9 @@ import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
 import jeonghwan.app.favorite.ui.common.ui.LazyPagingGrid
 import jeonghwan.app.favorite.ui.common.ui.SearchBar
+import jeonghwan.app.favorite.ui.common.ui.ThumbnailCard
+import jeonghwan.app.favorite.ui.common.ui.containsThumbnailUrl
 import kotlinx.coroutines.flow.flowOf
-import java.time.LocalDateTime
 
 
 @Composable
@@ -59,9 +60,20 @@ fun SearchUiScreen(
 
         LazyPagingGrid(
             lazyPagingItems = lazyPagingItems,
-            selectedThumbnailUrl = favoriteSet,
-            onClick = onFavoriteClick
-        )
+        ) { item ->
+            // UI 요소 표시
+            val isFav = favoriteSet.containsThumbnailUrl(item)
+
+            ThumbnailCard(
+                thumbnailUrl = item.getThumbnail(),
+                date = item.getDate(),
+                time = item.getTime(),
+                isFavorite = isFav,
+                onClick = {
+                    onFavoriteClick(item)
+                }
+            )
+        }
     }
 }
 
@@ -93,7 +105,7 @@ fun PreviewPopulatedLazyPagingGrid() {
             height = 100,
             docUrl = "https://example.com/doc_$it",
             collection = "collection $it",
-            dateTime = LocalDateTime.now(),
+            dateTime = 0L,
         )
     }
     SearchUiScreen(

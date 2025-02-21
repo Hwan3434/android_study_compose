@@ -1,6 +1,7 @@
 package jeonghwan.app.favorite.ui.screen
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TabRow
@@ -15,11 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
-private val naviItemsSaver = Saver<NaviItem, String>(
+private val NAVI_TABS = listOf(Navigation.Search, Navigation.Favorite)
+private val naviItemsSaver = Saver<Navigation, String>(
     save = { it.route },
     restore = { route ->
-        val tabs = listOf(NaviItem.Search, NaviItem.Favorite)
-        tabs.find { it.route == route } ?: NaviItem.Search
+        NAVI_TABS.find { it.route == route } ?: Navigation.Search
     }
 )
 
@@ -27,7 +28,7 @@ private val naviItemsSaver = Saver<NaviItem, String>(
 fun RootScreen(
     modifier: Modifier = Modifier,
 ) {
-    var selectedTab by rememberSaveable(stateSaver = naviItemsSaver) { mutableStateOf(NaviItem.Search) }
+    var selectedTab by rememberSaveable(stateSaver = naviItemsSaver) { mutableStateOf(Navigation.Search) }
     val saveableStateHolder = rememberSaveableStateHolder()
 
     Scaffold(
@@ -40,11 +41,12 @@ fun RootScreen(
             }
         }
     ) { innerPadding ->
-        Box(modifier = modifier.padding(innerPadding)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+        ) {
             saveableStateHolder.SaveableStateProvider(key = selectedTab.route) {
-                selectedTab.GetScreen(
-                    modifier,
-                )
+                selectedTab.GetScreen(modifier)
             }
         }
     }
@@ -53,14 +55,13 @@ fun RootScreen(
 
 @Composable
 fun BottomBar(
-    currentItem: NaviItem,
-    onChanged: (NaviItem) -> Unit,
+    currentItem: Navigation,
+    onChanged: (Navigation) -> Unit,
 ){
-    val tabs = listOf(NaviItem.Search, NaviItem.Favorite)
     TabRow(
-        selectedTabIndex = tabs.indexOf(currentItem),
+        selectedTabIndex = NAVI_TABS.indexOf(currentItem),
         tabs = {
-            tabs.forEach { tab ->
+            NAVI_TABS.forEach { tab ->
                 tab.GetTab(
                     currentItem,
                 ) {
@@ -75,8 +76,8 @@ fun BottomBar(
 @Composable
 fun RootScreenPreview() {
 
-    var selectedTab by rememberSaveable(stateSaver = naviItemsSaver) { mutableStateOf(NaviItem.Search) }
-    val tabs = listOf(NaviItem.Search, NaviItem.Favorite)
+    var selectedTab by rememberSaveable(stateSaver = naviItemsSaver) { mutableStateOf(Navigation.Search) }
+    val tabs = listOf(Navigation.Search, Navigation.Favorite)
 
     Scaffold(
         bottomBar = {

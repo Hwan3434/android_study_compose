@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     kotlin("kapt")
-    alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
 }
 
@@ -49,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
+    implementation(project(":common"))
     implementation(project(":domain"))
     implementation(project(":dataModel"))
     implementation(libs.androidx.core.ktx)
@@ -60,24 +59,15 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // kotlin date time
-    implementation(libs.kotlinx.datetime)
-
-    // retrofit, okhttp, gson
+    // retrofit, gson KakaoService 만들며 필요
     implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging.interceptor)
     implementation(libs.gson)
 
     // room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-
-    // hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    implementation(libs.room.paging)
 
     // test
     testImplementation(libs.mockk)

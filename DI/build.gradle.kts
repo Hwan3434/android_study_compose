@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
+    implementation(project(":common"))
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":dataModel"))
@@ -50,6 +50,13 @@ dependencies {
     implementation(libs.kotlinx.datetime)
     implementation(libs.gson)
 
+    // retrofit, okhttp, gson
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.gson)
+
     // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
@@ -60,8 +67,4 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.room.paging)
 
-    // test
-    testImplementation(libs.mockk)
-    implementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.mockk.android)
 }

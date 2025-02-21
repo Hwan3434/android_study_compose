@@ -23,6 +23,6 @@ rootProject.name = "Favorite"
 include(":app")
 include(":data")
 include(":DI")
-include(":core")
 include(":domain")
 include(":dataModel")
+include(":common")

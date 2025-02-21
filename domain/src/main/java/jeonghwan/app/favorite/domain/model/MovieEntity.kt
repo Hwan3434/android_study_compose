@@ -1,6 +1,7 @@
 package jeonghwan.app.favorite.domain.model
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -9,14 +10,26 @@ import java.time.LocalDateTime
 data class MovieEntity(
     val title: String,
     val playTime: Int,
-    val thumbnail: String,
+    private val thumbnail: String,
     val url: String,
     val author: String,
-    val dateTime: LocalDateTime,
-) : ContentEntity(
-    localDateTime = dateTime
-) {
-    override fun getThumbnailUrl(): String {
+    private val dateTime: Long,
+) : ContentEntity{
+    override fun getThumbnail(): String {
         return thumbnail
+    }
+
+    override fun getDateTime(): Long {
+        return dateTime
+    }
+
+    override fun getDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+        return super.convertLongToLocalDateTime(dateTime).format(formatter)
+    }
+
+    override fun getTime(): String {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return super.convertLongToLocalDateTime(dateTime).format(formatter)
     }
 }
