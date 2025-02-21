@@ -1,16 +1,23 @@
 package jeonghwan.app.favorite.di.common
 
+import jeonghwan.app.favorite.core.database.emtity.FavoriteData
 import jeonghwan.app.favorite.datamodel.ImageDocumentModel
 import jeonghwan.app.favorite.datamodel.MovieDocumentModel
+import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
 import jeonghwan.app.favorite.domain.model.MovieEntity
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import java.time.LocalDateTime
+import java.time.ZoneId
 
-fun String.toLocalDateTime2(): LocalDateTime {
-    return Instant.parse(this).toLocalDateTime(TimeZone.currentSystemDefault())
+fun String.toKotlinLocalDateTime(): LocalDateTime {
+    return LocalDateTime.now(ZoneId.systemDefault())
+}
+
+fun FavoriteData.toEntity(): FavoriteEntity {
+    return FavoriteEntity(
+        thumbnail = this.thumbnail,
+        dateTime = this.dateTime
+    )
 }
 
 fun ImageDocumentModel.toEntity(): ImageEntity {
@@ -22,7 +29,7 @@ fun ImageDocumentModel.toEntity(): ImageEntity {
         height = height,
         displaySiteName = displaySiteName,
         docUrl = docUrl,
-        dateTime = dateTime.toLocalDateTime2()
+        dateTime = dateTime.toKotlinLocalDateTime()
     )
 }
 
@@ -33,7 +40,7 @@ fun MovieDocumentModel.toEntity(): MovieEntity {
         playTime = playTime,
         thumbnail = thumbnail,
         url = url,
-        dateTime = dateTime.toLocalDateTime2(),
+        dateTime = dateTime.toKotlinLocalDateTime(),
         author = author
     )
 }

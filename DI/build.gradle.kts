@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     kotlin("kapt")
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -35,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":dataModel"))
@@ -46,6 +48,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.gson)
 
     // hilt
     implementation(libs.hilt.android)
@@ -54,7 +57,8 @@ dependencies {
     // room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
+    implementation(libs.room.paging)
 
     // test
     testImplementation(libs.mockk)

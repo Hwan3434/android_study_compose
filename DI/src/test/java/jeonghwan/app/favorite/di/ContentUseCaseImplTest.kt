@@ -40,7 +40,7 @@ class ContentUseCaseImplTest {
     fun `getContent sorts content by dateTime descending with multiple items`() = runTest {
         // 더미 ImageEntity 생성 (2개)
         val dummyImageEntityLatest = ImageEntity(
-            dateTime = now,
+            localDateTime = now,
             thumbnail = "https://example.com/thumbnail_latest.jpg",
             imageUrl = "https://example.com/image_latest.jpg",
             displaySiteName = "Example Site",
@@ -50,7 +50,7 @@ class ContentUseCaseImplTest {
             collection = "blog"
         )
         val dummyImageEntityOld = ImageEntity(
-            dateTime = twoHoursAgo,
+            localDateTime = twoHoursAgo,
             thumbnail = "https://example.com/thumbnail_old.jpg",
             imageUrl = "https://example.com/image_old.jpg",
             displaySiteName = "Example Site",
@@ -62,7 +62,7 @@ class ContentUseCaseImplTest {
 
         // 더미 MovieEntity 생성 (1개)
         val dummyMovieEntity = MovieEntity(
-            dateTime = oneHourAgo,
+            localDateTime = oneHourAgo,
             title = "Example Movie",
             playTime = 120,
             thumbnail = "https://example.com/movie_thumbnail.jpg",
@@ -110,8 +110,8 @@ class ContentUseCaseImplTest {
         assertEquals(3, contentPagingResult?.data?.size)
         // 내림차순 정렬: 가장 최신의 dateTime이 첫 번째에 위치해야 함.
         contentPagingResult?.let {
-            assertTrue(it.data[0].dateTime >= it.data[1].dateTime)
-            assertTrue(it.data[1].dateTime >= it.data[2].dateTime)
+            assertTrue(it.data[0].localDateTime >= it.data[1].localDateTime)
+            assertTrue(it.data[1].localDateTime >= it.data[2].localDateTime)
             // 추가적으로, 가장 최신은 dummyImageEntityLatest, 두 번째는 dummyMovieEntity, 세 번째는 dummyImageEntityOld여야 함.
             assertEquals(dummyImageEntityLatest, it.data[0])
             assertEquals(dummyMovieEntity, it.data[1])
@@ -123,7 +123,7 @@ class ContentUseCaseImplTest {
     fun `getContent returns success when both image and movie repositories succeed`() = runTest {
         // 성공 케이스: image 및 movie 모두 성공적인 결과 반환
         val dummyImageEntity = ImageEntity(
-            dateTime = now,
+            localDateTime = now,
             thumbnail = "https://example.com/thumbnail.jpg",
             imageUrl = "https://example.com/image.jpg",
             displaySiteName = "Example Site",
@@ -133,7 +133,7 @@ class ContentUseCaseImplTest {
             collection = "blog"
         )
         val dummyMovieEntity = MovieEntity(
-            dateTime = oneHourAgo,
+            localDateTime = oneHourAgo,
             title = "Example Movie",
             playTime = 120,
             thumbnail = "https://example.com/thumbnail.jpg",
@@ -185,7 +185,7 @@ class ContentUseCaseImplTest {
     fun `getContent returns failure when image repository fails`() = runTest {
         // 이미지 저장소 실패, 영화 저장소 성공
         val dummyMovieEntity = MovieEntity(
-            dateTime = oneHourAgo,
+            localDateTime = oneHourAgo,
             title = "Example Movie",
             playTime = 120,
             thumbnail = "https://example.com/thumbnail.jpg",
@@ -226,7 +226,7 @@ class ContentUseCaseImplTest {
     fun `getContent returns failure when movie repository fails`() = runTest {
         // 영화 저장소 실패, 이미지 저장소 성공
         val dummyImageEntity = ImageEntity(
-            dateTime = now,
+            localDateTime = now,
             thumbnail = "https://example.com/thumbnail.jpg",
             imageUrl = "https://example.com/image.jpg",
             displaySiteName = "Example Site",

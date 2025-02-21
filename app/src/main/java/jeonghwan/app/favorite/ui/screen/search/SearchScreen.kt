@@ -17,7 +17,7 @@ import jeonghwan.app.favorite.domain.model.ImageEntity
 import jeonghwan.app.favorite.ui.common.ui.LazyPagingGrid
 import jeonghwan.app.favorite.ui.common.ui.SearchBar
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.datetime.LocalDateTime
+import java.time.LocalDateTime
 
 
 @Composable
@@ -44,7 +44,7 @@ fun SearchUiScreen(
     modifier: Modifier = Modifier,
     state: SearchUiState,
     lazyPagingItems: LazyPagingItems<ContentEntity>,
-    favoriteSet: Set<String>,
+    favoriteSet: Set<ContentEntity>,
     onQueryChange: (String) -> Unit,
     onFavoriteClick: (ContentEntity) -> Unit,
 ) {
@@ -93,7 +93,7 @@ fun PreviewPopulatedLazyPagingGrid() {
             height = 100,
             docUrl = "https://example.com/doc_$it",
             collection = "collection $it",
-            dateTime = LocalDateTime(2021, 8, 1, 12, 34, 56),
+            dateTime = LocalDateTime.now(),
         )
     }
     SearchUiScreen(
@@ -101,7 +101,7 @@ fun PreviewPopulatedLazyPagingGrid() {
             query = "query"
         ),
         lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
-        favoriteSet = setOf(sampleItems[0].getThumbnailUrl()),
+        favoriteSet = setOf(),
         onFavoriteClick = {},
         onQueryChange = { }
     )

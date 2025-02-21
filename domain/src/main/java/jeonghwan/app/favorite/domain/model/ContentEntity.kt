@@ -1,26 +1,26 @@
 package jeonghwan.app.favorite.domain.model
 
-import kotlinx.datetime.LocalDateTime
+import android.util.Log
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 /**
  * GridView에서 보여질 데이터
  */
 abstract class ContentEntity(
-    open val dateTime: LocalDateTime,
+    val localDateTime: LocalDateTime,
 ) {
     abstract fun getThumbnailUrl(): String
 
     fun getDate(): String {
-        val year = dateTime.year
-        val month = dateTime.monthNumber.toString().padStart(2, '0')
-        val day = dateTime.dayOfMonth.toString().padStart(2, '0')
-        return "$year.$month.$day"
+        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+        return localDateTime.format(formatter)
     }
 
     fun getTime(): String {
-        val hour = dateTime.hour.toString().padStart(2, '0')
-        val minute = dateTime.minute.toString().padStart(2, '0')
-        return "$hour:$minute"
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return localDateTime.format(formatter)
     }
 
 }

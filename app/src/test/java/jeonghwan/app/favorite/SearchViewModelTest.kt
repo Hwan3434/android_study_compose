@@ -1,6 +1,5 @@
 package jeonghwan.app.favorite
 
-import androidx.paging.PagingData
 import androidx.paging.map
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -78,7 +77,7 @@ class SearchViewModelTest {
             width = 100,
             height = 100,
             docUrl = "docUrl",
-            dateTime = LocalDateTime(2021, 8, 1, 12, 34, 56),
+            localDateTime = LocalDateTime(2021, 8, 1, 12, 34, 56),
             collection = "collection",
         )
 

@@ -10,8 +10,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.domain.model.QuerySort
-import jeonghwan.app.favorite.domain.repository.FavoriteDao
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
+import jeonghwan.app.favorite.domain.usecase.FavoriteUsecaseInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val contentUseCase: ContentUseCaseInterface,
-    private val dao: FavoriteDao
+    private val favoriteUseCase: FavoriteUsecaseInterface
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
@@ -64,24 +64,21 @@ class SearchViewModel @Inject constructor(
 
     fun toggleFavorite(contentEntity: ContentEntity) {
         viewModelScope.launch {
-            if (isFavorite(contentEntity)) {
-                dao.deleteByThumbnailUrl(contentEntity.getThumbnailUrl())
+            if (favoriteUseCase.isFavorite(contentEntity.getThumbnailUrl())) {
+                favoriteUseCase.remove(contentEntity.getThumbnailUrl())
             } else {
-                dao.insert(
+                favoriteUseCase.insert(
                     FavoriteEntity(
                         thumbnail = contentEntity.getThumbnailUrl(),
-                        dateTime = contentEntity.dateTime
+                        dateTime = contentEntity.localDateTime
                     )
                 )
             }
         }
     }
 
-    // 즐겨찾기 상태를 Flow로 수집
-    val favoriteFlow: Flow<Set<String>> = dao.getFavorites()
-        .map { favorites -> favorites.map { it.getThumbnailUrl() }.toSet() }
+    // 즐겨찾기 상태를 수집
+    val favoriteFlow: Flow<Set<FavoriteEntity>> = favoriteUseCase.flowFavorites()
+        .map { favorites -> favorites.toSet() }
 
-    private suspend fun isFavorite(contentEntity: ContentEntity): Boolean {
-        return dao.isThumbnailUrlExists(contentEntity.getThumbnailUrl()) > 0
-    }
 }

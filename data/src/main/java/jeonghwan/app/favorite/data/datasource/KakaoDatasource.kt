@@ -5,7 +5,9 @@ import jeonghwan.app.favorite.datamodel.ImageDocumentModel
 import jeonghwan.app.favorite.datamodel.KakaoModel
 import jeonghwan.app.favorite.datamodel.MovieDocumentModel
 
-class KakaoDatasource(private val kakaoService: KakaoService) {
+class KakaoDatasource(
+    private val kakaoService: KakaoService,
+) {
     suspend fun requestImage(
         query: String,
         sort: String?,

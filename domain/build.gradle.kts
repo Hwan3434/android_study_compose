@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 
-    id("com.google.devtools.ksp") version "2.0.21-1.0.27" // KSP 버전을 확인하세요
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":dataModel"))
+    implementation(project(":core"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -40,14 +40,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // paging
-    implementation(libs.room.paging)
-
     // kotlin date time
     implementation(libs.kotlinx.datetime)
 
-    // room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
+
+    implementation(libs.room.paging)
 }

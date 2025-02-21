@@ -40,13 +40,17 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.datetime.LocalDateTime
+import java.time.LocalDateTime
 
+// 즐겨찾기 판단 여부
+fun <T : ContentEntity> Set<T>.containsThumbnailUrl(target: ContentEntity): Boolean {
+    return this.any { it.getThumbnailUrl() == target.getThumbnailUrl() }
+}
 
 @Composable
 fun <T : ContentEntity> LazyPagingGrid(
     lazyPagingItems: LazyPagingItems<T>,
-    selectedThumbnailUrl: Set<String>,
+    selectedThumbnailUrl: Set<ContentEntity>,
     onClick: (T) -> Unit
 ) {
     if (lazyPagingItems.itemCount == 0) {
@@ -83,7 +87,7 @@ fun <T : ContentEntity> LazyPagingGrid(
             items(lazyPagingItems.itemCount) { index ->
                 lazyPagingItems[index]?.let { item ->
                     // UI 요소 표시
-                    val isFav = selectedThumbnailUrl.contains(item.getThumbnailUrl())
+                    val isFav = selectedThumbnailUrl.containsThumbnailUrl(item)
 
                     ThumbnailCard(
                         thumbnailUrl = item.getThumbnailUrl(),
@@ -176,12 +180,12 @@ fun PreviewPopulatedLazyPagingGrid() {
             height = 100,
             docUrl = "https://example.com/doc_$it",
             collection = "collection $it",
-            dateTime = LocalDateTime(2021, 8, 1, 12, 34, 56),
+            dateTime = LocalDateTime.now(),
         )
     }
     LazyPagingGrid(
         lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
-        selectedThumbnailUrl = setOf(sampleItems[0].getThumbnailUrl()),
+        selectedThumbnailUrl = setOf(sampleItems[0]),
         onClick = {}
     )
 }

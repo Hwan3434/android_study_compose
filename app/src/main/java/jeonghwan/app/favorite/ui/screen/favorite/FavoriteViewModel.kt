@@ -1,6 +1,5 @@
 package jeonghwan.app.favorite.ui.screen.favorite
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -10,42 +9,30 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
-import jeonghwan.app.favorite.domain.repository.FavoriteDao
+import jeonghwan.app.favorite.domain.usecase.FavoriteUsecaseInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
-    private val dao: FavoriteDao
+    private val favoriteUseCase: FavoriteUsecaseInterface,
 ) : ViewModel() {
 
-    val pagedFavorites: Flow<PagingData<FavoriteEntity>> = Pager(
-        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
-        pagingSourceFactory = { dao.getPagedFavorites() }
-    ).flow
-        .cachedIn(viewModelScope)
+    val pagedFavorites = favoriteUseCase.getPagedFavorites().cachedIn(viewModelScope)
 
-    val favoriteFlow: Flow<Set<String>> = dao.getFavorites()
-        .map { favorites -> favorites.map { it.getThumbnailUrl() }.toSet() }
+    val favoriteFlow: Flow<Set<FavoriteEntity>> = favoriteUseCase.flowFavorites()
+        .map { favorites -> favorites.toSet() }
 
     fun toggleFavorite(contentEntity: ContentEntity) {
         viewModelScope.launch {
-            if (isFavorite(contentEntity)) {
-                dao.deleteByThumbnailUrl(contentEntity.getThumbnailUrl())
-            } else {
-                dao.insert(
-                    FavoriteEntity(
-                        thumbnail = contentEntity.getThumbnailUrl(),
-                        dateTime = contentEntity.dateTime,
-                    )
-                )
-            }
+            favoriteUseCase.remove(contentEntity.getThumbnailUrl())
         }
     }
 
     private suspend fun isFavorite(contentEntity: ContentEntity): Boolean {
-        return dao.isThumbnailUrlExists(contentEntity.getThumbnailUrl()) > 0
+        return favoriteUseCase.isFavorite(contentEntity.getThumbnailUrl())
     }
 }

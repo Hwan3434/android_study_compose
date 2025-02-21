@@ -26,10 +26,7 @@ class ContentPagingSource(
     override suspend fun load(
         params: LoadParams<ContentPagingKey>
     ): LoadResult<ContentPagingKey, ContentEntity> = coroutineScope {
-        // 현재 페이지를 가져오거나, 초기 키를 사용
         val key = params.key ?: initialKey
-
-        // QueryEntity를 생성할 때 PagingKey 정보 사용
         val query = ContentQueryEntity(
             query = key.query,
             sort = key.sort,
@@ -66,6 +63,7 @@ class ContentPagingSource(
                 }
             )
         } catch (e: Exception) {
+            e.printStackTrace()
             LoadResult.Error(e)
         }
     }

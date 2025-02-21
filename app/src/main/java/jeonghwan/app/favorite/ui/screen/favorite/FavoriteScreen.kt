@@ -16,7 +16,8 @@ import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.ui.common.ui.LazyPagingGrid
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.datetime.LocalDateTime
+import timber.log.Timber
+import java.time.LocalDateTime
 
 @Composable
 fun FavoriteScreen(
@@ -36,9 +37,10 @@ fun FavoriteScreen(
 fun FavoriteUiScreen(
     modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<FavoriteEntity>,
-    favoriteSet: Set<String>,
+    favoriteSet: Set<FavoriteEntity>,
     onFavoriteClick: (ContentEntity) -> Unit
 ) {
+    Timber.d("FavoriteUiScreen: ${lazyPagingItems.itemCount}")
     Box(
         modifier = modifier.padding(horizontal = 16.dp),
     ){
@@ -62,7 +64,6 @@ fun PreviewEmptyLazyPagingGrid() {
     )
 }
 
-// Preview for populated state
 @Preview(showBackground = true)
 @Composable
 fun PreviewPopulatedLazyPagingGrid() {
@@ -70,12 +71,12 @@ fun PreviewPopulatedLazyPagingGrid() {
     val sampleItems = List(5) {
         FavoriteEntity(
             thumbnail = "https://example.com/image_$it.jpg",
-            dateTime = LocalDateTime(2021, 8, 1, 12, 34, 56),
+            dateTime = LocalDateTime.now(),
         )
     }
     FavoriteUiScreen(
         lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
-        favoriteSet = setOf(sampleItems[0].getThumbnailUrl()),
+        favoriteSet = setOf(),
         onFavoriteClick = {}
     )
 }
