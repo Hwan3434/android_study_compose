@@ -42,10 +42,12 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import jeonghwan.app.favorite.R
+import jeonghwan.app.favorite.common.HHmm
+import jeonghwan.app.favorite.common.nowFLong
+import jeonghwan.app.favorite.common.yyyyMMdd
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
 import kotlinx.coroutines.flow.flowOf
-import java.time.LocalDateTime
 
 
 // 즐겨찾기 판단 여부
@@ -180,8 +182,8 @@ fun PreviewEmptyLazyPagingGrid() {
     ) {
         ThumbnailCard(
             thumbnailUrl = "abc",
-            date = LocalDateTime.now().toString(),
-            time = LocalDateTime.now().toString(),
+            date = nowFLong().yyyyMMdd(),
+            time = nowFLong().HHmm(),
             isFavorite = false,
             onClick = {}
         )
@@ -209,8 +211,8 @@ fun PreviewPopulatedLazyPagingGrid() {
     ) {
         ThumbnailCard(
             thumbnailUrl = "abc",
-            date = LocalDateTime.now().toString(),
-            time = LocalDateTime.now().toString(),
+            date = nowFLong().yyyyMMdd(),
+            time = nowFLong().HHmm(),
             isFavorite = false,
             onClick = {}
         )

@@ -20,10 +20,10 @@ class CacheDataUtil<T : ContentEntity> {
         cacheDatasource.deleteExpired(currentTime)
 
         // 캐시 히스토리에서 유효 캐시 조회
-        cacheDatasource.getValidCache(key, currentTime)?.let { cacheEntity ->
+        cacheDatasource.getValidCache(key, currentTime)?.let { cacheData ->
             try {
                 val pagingEntity: PagingEntity<T> = Gson().fromJson(
-                    cacheEntity.jsonData,
+                    cacheData.jsonData,
                     typeToken.type
                 )
                 return Result.success(pagingEntity)

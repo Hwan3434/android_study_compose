@@ -23,10 +23,12 @@ import kotlinx.coroutines.flow.flowOf
 fun FavoriteScreen(
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val pagedFavorites = viewModel.pagedFavorites.collectAsLazyPagingItems()
     val favoriteSet by viewModel.favoriteFlow.collectAsState(initial = emptySet())
 
     FavoriteUiScreen(
+        state = uiState,
         lazyPagingItems = pagedFavorites,
         favoriteSet = favoriteSet,
         onFavoriteClick = viewModel::toggleFavorite
@@ -36,6 +38,7 @@ fun FavoriteScreen(
 
 @Composable
 fun FavoriteUiScreen(
+    state: FavoriteUiState,
     modifier: Modifier = Modifier,
     lazyPagingItems: LazyPagingItems<FavoriteEntity>,
     favoriteSet: Set<FavoriteEntity>,
@@ -69,6 +72,7 @@ fun FavoriteUiScreen(
 @Composable
 fun PreviewEmptyLazyPagingGrid() {
     FavoriteUiScreen(
+        state = FavoriteUiState(),
         lazyPagingItems = flowOf(PagingData.empty<FavoriteEntity>()).collectAsLazyPagingItems(),
         favoriteSet = emptySet(),
         onFavoriteClick = {}
@@ -86,6 +90,7 @@ fun PreviewPopulatedLazyPagingGrid() {
         )
     }
     FavoriteUiScreen(
+        state = FavoriteUiState(),
         lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
         favoriteSet = setOf(),
         onFavoriteClick = {}

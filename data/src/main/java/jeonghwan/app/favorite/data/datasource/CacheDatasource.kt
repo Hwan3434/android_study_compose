@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import jeonghwan.app.favorite.core.DBCommon
+import jeonghwan.app.favorite.common.DBCommon
 import jeonghwan.app.favorite.datamodel.CacheData
 import java.time.LocalDateTime
 

@@ -8,8 +8,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import jeonghwan.app.favorite.core.DBCommon
-import jeonghwan.app.favorite.core.URLCommon
+import jeonghwan.app.favorite.common.DBCommon
+import jeonghwan.app.favorite.common.URLCommon
 import jeonghwan.app.favorite.data.database.AppDatabase
 import jeonghwan.app.favorite.data.datasource.KakaoDatasource
 import jeonghwan.app.favorite.data.datasource.CacheDatasource
