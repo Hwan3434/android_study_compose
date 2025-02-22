@@ -1,4 +1,4 @@
-package jeonghwan.app.favorite.core
+package jeonghwan.app.favorite.common
 
 class URLCommon {
     companion object {

@@ -8,14 +8,12 @@ import jeonghwan.app.favorite.datamodel.ImageDocumentModel
 import jeonghwan.app.favorite.datamodel.KakaoModel
 import jeonghwan.app.favorite.datamodel.MetaModel
 import jeonghwan.app.favorite.datamodel.MovieDocumentModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class KakaoDatasourceTest {
     private lateinit var kakaoService: KakaoService
     private lateinit var kakaoDatasource: KakaoDatasource

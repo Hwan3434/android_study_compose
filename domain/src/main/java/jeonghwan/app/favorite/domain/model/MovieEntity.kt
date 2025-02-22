@@ -1,7 +1,7 @@
 package jeonghwan.app.favorite.domain.model
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import jeonghwan.app.favorite.common.HHmm
+import jeonghwan.app.favorite.common.yyyyMMdd
 
 
 /**
@@ -15,21 +15,8 @@ data class MovieEntity(
     val author: String,
     private val dateTime: Long,
 ) : ContentEntity{
-    override fun getThumbnail(): String {
-        return thumbnail
-    }
-
-    override fun getDateTime(): Long {
-        return dateTime
-    }
-
-    override fun getDate(): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-        return super.convertLongToLocalDateTime(dateTime).format(formatter)
-    }
-
-    override fun getTime(): String {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        return super.convertLongToLocalDateTime(dateTime).format(formatter)
-    }
+    override fun getThumbnail(): String = thumbnail
+    override fun getDateTime(): Long = dateTime
+    override fun getDate(): String = dateTime.yyyyMMdd()
+    override fun getTime(): String = dateTime.HHmm()
 }

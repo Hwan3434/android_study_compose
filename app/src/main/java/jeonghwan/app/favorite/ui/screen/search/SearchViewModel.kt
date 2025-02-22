@@ -63,6 +63,10 @@ class SearchViewModel @Inject constructor(
         }
         .cachedIn(viewModelScope)
 
+    // 즐겨찾기 상태를 수집
+    val favoriteFlow: Flow<Set<FavoriteEntity>> = favoriteUseCase.flowFavorites()
+        .map { favorites -> favorites.toSet() }
+
     // 사용자 이벤트 처리를 위한 함수 예시
     fun updateQuery(newQuery: String) {
         _uiState.value = _uiState.value.copy(query = newQuery)
@@ -82,9 +86,4 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
-
-    // 즐겨찾기 상태를 수집
-    val favoriteFlow: Flow<Set<FavoriteEntity>> = favoriteUseCase.flowFavorites()
-        .map { favorites -> favorites.toSet() }
-
 }

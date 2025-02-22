@@ -35,6 +35,7 @@ fun RootScreen(
         modifier = modifier,
         bottomBar = {
             BottomBar(
+                items = NAVI_TABS,
                 currentItem = selectedTab
             ) {
                 selectedTab = it
@@ -54,14 +55,15 @@ fun RootScreen(
 
 
 @Composable
-fun BottomBar(
+private fun BottomBar(
+    items: List<Navigation>,
     currentItem: Navigation,
     onChanged: (Navigation) -> Unit,
 ){
     TabRow(
-        selectedTabIndex = NAVI_TABS.indexOf(currentItem),
+        selectedTabIndex = items.indexOf(currentItem),
         tabs = {
-            NAVI_TABS.forEach { tab ->
+            items.forEach { tab ->
                 tab.GetTab(
                     currentItem,
                 ) {

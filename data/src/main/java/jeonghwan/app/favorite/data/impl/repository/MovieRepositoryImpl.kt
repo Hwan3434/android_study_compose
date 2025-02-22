@@ -1,6 +1,7 @@
 package jeonghwan.app.favorite.data.impl.repository
 
 import com.google.gson.reflect.TypeToken
+import jeonghwan.app.favorite.common.nowFLocalDateTime
 import jeonghwan.app.favorite.data.datasource.CacheDatasource
 import jeonghwan.app.favorite.data.common.toEntity
 import jeonghwan.app.favorite.data.datasource.KakaoDatasource
@@ -8,8 +9,6 @@ import jeonghwan.app.favorite.domain.model.MovieEntity
 import jeonghwan.app.favorite.domain.model.PagingEntity
 import jeonghwan.app.favorite.domain.model.PagingQuery
 import jeonghwan.app.favorite.domain.repository.MovieRepositoryInterface
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 class MovieRepositoryImpl(
     private val kakaoDatasource: KakaoDatasource,
@@ -21,15 +20,9 @@ class MovieRepositoryImpl(
         return "movie_${query.query}_${query.sort}_${query.page}_${query.size}"
     }
 
-    // 현재 시간을 반환하는 함수
-    private fun getCurrentLocalDateTime(): LocalDateTime {
-        return LocalDateTime.now(ZoneId.systemDefault())
-    }
-
-
     override suspend fun getMovie(query: PagingQuery): Result<PagingEntity<MovieEntity>> {
         val key = getCacheKey(query)
-        val currentTime = getCurrentLocalDateTime()
+        val currentTime = nowFLocalDateTime()
         val util = CacheDataUtil<MovieEntity>()
 
         return util.fetchPagingData(

@@ -1,7 +1,7 @@
 package jeonghwan.app.favorite.domain.model
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import jeonghwan.app.favorite.common.HHmm
+import jeonghwan.app.favorite.common.yyyyMMdd
 
 data class FavoriteEntity (
     private val thumbnail: String,
@@ -16,12 +16,10 @@ data class FavoriteEntity (
     }
 
     override fun getDate(): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-        return super.convertLongToLocalDateTime(dateTime).format(formatter)
+        return dateTime.yyyyMMdd()
     }
 
     override fun getTime(): String {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        return super.convertLongToLocalDateTime(dateTime).format(formatter)
+        return dateTime.HHmm()
     }
 }
