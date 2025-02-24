@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +53,7 @@ import kotlinx.coroutines.flow.flowOf
 
 // 즐겨찾기 판단 여부
 fun <T : ContentEntity> Set<T>.containsThumbnailUrl(target: ContentEntity): Boolean {
-    return this.any { it.getThumbnail() == target.getThumbnail() }
+    return this.any { it == target }
 }
 
 @Composable
@@ -66,11 +67,6 @@ fun <T : ContentEntity> LazyPagingGrid(
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    val touchModifier = Modifier.pointerInput(Unit) {
-        detectTapGestures {
-            keyboardController?.hide()
-        }
-    }
     val scrollState = rememberLazyStaggeredGridState()
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -85,7 +81,11 @@ fun <T : ContentEntity> LazyPagingGrid(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .then(touchModifier)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    keyboardController?.hide()
+                }
+            }
             .nestedScroll(nestedScrollConnection)
     ){
 
@@ -98,7 +98,9 @@ fun <T : ContentEntity> LazyPagingGrid(
         ) {
             items(lazyPagingItems.itemCount) { index ->
                 lazyPagingItems[index]?.let { item ->
-                    compose(item)
+                    key(item.getThumbnail()) {
+                        compose(item)
+                    }
                 }
             }
         }

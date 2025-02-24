@@ -32,11 +32,9 @@ fun SearchScreen(
     SearchUiScreen(
         state = uiState,
         lazyPagingItems = lazyPagingItems,
-        onQueryChange = { viewModel.updateQuery(it) },
-        favoriteSet = favoriteSet,
-        onFavoriteClick = {
-            viewModel.toggleFavorite(it)
-        }
+        onQueryChange = viewModel::updateQuery,
+        favoriteSet = favoriteSet::containsThumbnailUrl,
+        onFavoriteClick = viewModel::toggleFavorite
     )
 }
 
@@ -45,7 +43,7 @@ fun SearchUiScreen(
     modifier: Modifier = Modifier,
     state: SearchUiState,
     lazyPagingItems: LazyPagingItems<ContentEntity>,
-    favoriteSet: Set<ContentEntity>,
+    favoriteSet: (ContentEntity) -> Boolean,
     onQueryChange: (String) -> Unit,
     onFavoriteClick: (ContentEntity) -> Unit,
 ) {
@@ -62,7 +60,7 @@ fun SearchUiScreen(
             lazyPagingItems = lazyPagingItems,
         ) { item ->
             // UI 요소 표시
-            val isFav = favoriteSet.containsThumbnailUrl(item)
+            val isFav = favoriteSet(item)
 
             ThumbnailCard(
                 thumbnailUrl = item.getThumbnail(),
@@ -73,6 +71,7 @@ fun SearchUiScreen(
                     onFavoriteClick(item)
                 }
             )
+
         }
     }
 }
@@ -85,7 +84,7 @@ fun PreviewEmptyLazyPagingGrid() {
     SearchUiScreen(
         state = SearchUiState(),
         lazyPagingItems = flowOf(PagingData.empty<ContentEntity>()).collectAsLazyPagingItems(),
-        favoriteSet = emptySet(),
+        favoriteSet = { false },
         onFavoriteClick = {},
         onQueryChange = { }
     )
@@ -113,7 +112,7 @@ fun PreviewPopulatedLazyPagingGrid() {
             query = "query"
         ),
         lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
-        favoriteSet = setOf(),
+        favoriteSet = { false },
         onFavoriteClick = {},
         onQueryChange = { }
     )
