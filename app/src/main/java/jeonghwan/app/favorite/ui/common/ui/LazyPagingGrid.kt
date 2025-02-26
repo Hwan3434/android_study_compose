@@ -21,7 +21,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import jeonghwan.app.favorite.R
 import jeonghwan.app.favorite.common.HHmm
@@ -48,20 +46,16 @@ import jeonghwan.app.favorite.common.nowFLong
 import jeonghwan.app.favorite.common.yyyyMMdd
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-
-
-// 즐겨찾기 판단 여부
-fun <T : ContentEntity> Set<T>.containsThumbnailUrl(target: ContentEntity): Boolean {
-    return this.any { it == target }
-}
 
 @Composable
 fun <T : ContentEntity> LazyPagingGrid(
-    lazyPagingItems: LazyPagingItems<T>,
+    lazyPagingItems: Flow<PagingData<T>>,
     compose: @Composable (T) -> Unit
 ) {
-    if (lazyPagingItems.itemCount == 0) {
+    val items = lazyPagingItems.collectAsLazyPagingItems()
+    if (items.itemCount == 0) {
         EmptyView()
         return
     }
@@ -87,25 +81,29 @@ fun <T : ContentEntity> LazyPagingGrid(
                 }
             }
             .nestedScroll(nestedScrollConnection)
-    ){
+    ) {
+
 
         LazyVerticalStaggeredGrid(
-            state = scrollState,
-            modifier = Modifier.weight(1f),
+            state = scrollState, // scrollState는 미리 정의된 상태 객체라고 가정
             columns = StaggeredGridCells.Fixed(2),
             verticalItemSpacing = 4.dp,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            items(lazyPagingItems.itemCount) { index ->
-                lazyPagingItems[index]?.let { item ->
-                    key(item.getThumbnail()) {
-                        compose(item)
-                    }
+            items(
+                count = items.itemCount,
+                key = { index ->
+                    items[index]?.getThumbnail() ?: index
+                }
+            ) { index ->
+                val item = items[index]
+                if (item != null) {
+                    compose(item)
                 }
             }
         }
 
-        lazyPagingItems.apply {
+        items.apply {
             when (loadState.append) {
                 is LoadState.Loading -> {
                     Box(
@@ -180,13 +178,13 @@ private fun EmptyView() {
 @Composable
 fun PreviewEmptyLazyPagingGrid() {
     LazyPagingGrid(
-        lazyPagingItems = flowOf(PagingData.empty<ImageEntity>()).collectAsLazyPagingItems(),
+        lazyPagingItems = flowOf(PagingData.empty<ImageEntity>()),
     ) {
         ThumbnailCard(
             thumbnailUrl = "abc",
             date = nowFLong().yyyyMMdd(),
             time = nowFLong().HHmm(),
-            isFavorite = false,
+            favoriteSetFlow = flowOf(),
             onClick = {}
         )
     }
@@ -209,13 +207,13 @@ fun PreviewPopulatedLazyPagingGrid() {
         )
     }
     LazyPagingGrid(
-        lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
+        lazyPagingItems = flowOf(PagingData.from(sampleItems)),
     ) {
         ThumbnailCard(
             thumbnailUrl = "abc",
             date = nowFLong().yyyyMMdd(),
             time = nowFLong().HHmm(),
-            isFavorite = false,
+            favoriteSetFlow = flowOf(),
             onClick = {}
         )
     }

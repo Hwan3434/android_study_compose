@@ -6,26 +6,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
 import jeonghwan.app.favorite.ui.common.ui.LazyPagingGrid
 import jeonghwan.app.favorite.ui.common.ui.ThumbnailCard
-import jeonghwan.app.favorite.ui.common.ui.containsThumbnailUrl
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun FavoriteScreen(
     viewModel: FavoriteViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val pagedFavorites = viewModel.pagedFavorites.collectAsLazyPagingItems()
-    val favoriteSet by viewModel.favoriteFlow.collectAsState(initial = emptySet())
+    val pagedFavorites = viewModel.pagedFavorites
+    val favoriteSet = viewModel.favoriteFlow
 
     FavoriteUiScreen(
         state = uiState,
@@ -40,8 +36,8 @@ fun FavoriteScreen(
 fun FavoriteUiScreen(
     state: FavoriteUiState,
     modifier: Modifier = Modifier,
-    lazyPagingItems: LazyPagingItems<FavoriteEntity>,
-    favoriteSet: Set<FavoriteEntity>,
+    lazyPagingItems: Flow<PagingData<FavoriteEntity>>,
+    favoriteSet: Flow<Set<ContentEntity>>,
     onFavoriteClick: (ContentEntity) -> Unit
 ) {
     Box(
@@ -50,14 +46,11 @@ fun FavoriteUiScreen(
         LazyPagingGrid(
             lazyPagingItems = lazyPagingItems,
         ) { item ->
-            // UI 요소 표시
-            val isFav = favoriteSet.containsThumbnailUrl(item)
-
             ThumbnailCard(
                 thumbnailUrl = item.getThumbnail(),
                 date = item.getDate(),
                 time = item.getTime(),
-                isFavorite = isFav,
+                favoriteSetFlow = favoriteSet,
                 onClick = {
                     onFavoriteClick(item)
                 }
@@ -67,32 +60,32 @@ fun FavoriteUiScreen(
 }
 
 
-// Preview for empty state
-@Preview(showBackground = true)
-@Composable
-fun PreviewEmptyLazyPagingGrid() {
-    FavoriteUiScreen(
-        state = FavoriteUiState(),
-        lazyPagingItems = flowOf(PagingData.empty<FavoriteEntity>()).collectAsLazyPagingItems(),
-        favoriteSet = emptySet(),
-        onFavoriteClick = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewPopulatedLazyPagingGrid() {
-
-    val sampleItems = List(5) {
-        FavoriteEntity(
-            thumbnail = "https://example.com/image_$it.jpg",
-            dateTime = 0L,
-        )
-    }
-    FavoriteUiScreen(
-        state = FavoriteUiState(),
-        lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
-        favoriteSet = setOf(),
-        onFavoriteClick = {}
-    )
-}
+//// Preview for empty state
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewEmptyLazyPagingGrid() {
+//    FavoriteUiScreen(
+//        state = FavoriteUiState(),
+//        lazyPagingItems = flowOf(PagingData.empty<FavoriteEntity>()).collectAsLazyPagingItems(),
+//        favoriteSet = emptySet(),
+//        onFavoriteClick = {}
+//    )
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewPopulatedLazyPagingGrid() {
+//
+//    val sampleItems = List(5) {
+//        FavoriteEntity(
+//            thumbnail = "https://example.com/image_$it.jpg",
+//            dateTime = 0L,
+//        )
+//    }
+//    FavoriteUiScreen(
+//        state = FavoriteUiState(),
+//        lazyPagingItems = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems(),
+//        favoriteSet = setOf(),
+//        onFavoriteClick = {}
+//    )
+//}

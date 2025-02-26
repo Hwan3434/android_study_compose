@@ -10,12 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +32,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import jeonghwan.app.favorite.R
+import jeonghwan.app.favorite.domain.model.ContentEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun ThumbnailCard(
     thumbnailUrl: String,
     date: String,
     time: String,
-    isFavorite: Boolean,
+    favoriteSetFlow: Flow<Set<ContentEntity>>,
     onClick: () -> Unit
 ) {
     Card(
@@ -60,18 +68,13 @@ fun ThumbnailCard(
                 contentScale = ContentScale.Crop, // 이미지를 Crop 해서 보여줌
                 contentDescription = "thumbnail",
             )
-
-            if (isFavorite) {
-                Icon(
-                    imageVector = Icons.Filled.Star,
-                    contentDescription = "favorite",
-                    modifier = Modifier
-                        .size(48.dp)
+                FavoriteRecomposition(
+                    Modifier.size(48.dp)
                         .align(Alignment.TopEnd)
                         .padding(4.dp),
-                    tint = Color.Yellow
+                    thumbnail = thumbnailUrl,
+                    favoriteSetFlow = favoriteSetFlow
                 )
-            }
 
             Column(
                 modifier = Modifier
@@ -91,14 +94,43 @@ fun ThumbnailCard(
     }
 }
 
-@Preview(showBackground = true, widthDp = 340, heightDp = 340)
 @Composable
-fun ThumbnailCardPreview() {
-    ThumbnailCard(
-        thumbnailUrl = "https://example.com/image.jpg",
-        date = "2025-02-20",
-        time = "12:00 PM",
-        isFavorite = false,
-        onClick = { /* 클릭 시 동작 */ }
-    )
+private fun FavoriteRecomposition(
+    modifier: Modifier,
+    thumbnail: String,
+    favoriteSetFlow: Flow<Set<ContentEntity>>
+){
+    val isFavoriteFlow by rememberUpdatedClickCount(thumbnail, favoriteSetFlow)
+        Icon(
+            modifier = modifier,
+            imageVector = if(isFavoriteFlow) Icons.Filled.Star else Icons.Filled.MailOutline,
+            contentDescription = "favorite",
+            tint = Color.Yellow
+        )
 }
+
+@Composable
+fun rememberUpdatedClickCount(
+    thumbnail: String,
+    favoriteSetFlow: Flow<Set<ContentEntity>>
+): State<Boolean> {
+    val flowClickCount = remember(thumbnail, favoriteSetFlow) {
+        favoriteSetFlow.map { favorites ->
+            favorites.any { it.getThumbnail() == thumbnail }
+        }
+    }
+    return flowClickCount.collectAsState(initial = false)
+}
+
+
+//@Preview(showBackground = true, widthDp = 340, heightDp = 340)
+//@Composable
+//fun ThumbnailCardPreview() {
+//    ThumbnailCard(
+//        thumbnailUrl = "https://example.com/image.jpg",
+//        date = "2025-02-20",
+//        time = "12:00 PM",
+//        favoriteSetFlow = ,
+//        onClick = { /* 클릭 시 동작 */ }
+//    )
+//}
