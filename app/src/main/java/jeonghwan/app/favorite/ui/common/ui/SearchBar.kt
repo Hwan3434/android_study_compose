@@ -2,7 +2,6 @@ package jeonghwan.app.favorite.ui.common.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -10,10 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import jeonghwan.app.favorite.R
-import jeonghwan.app.favorite.ui.screen.search.SearchUiState
 import kotlinx.coroutines.time.delay
 import java.time.Duration
 

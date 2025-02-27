@@ -59,7 +59,6 @@ fun SearchUiScreen(
                     onFavoriteClick(item)
                 },
             )
-
         }
     }
 }
