@@ -13,19 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import jeonghwan.app.favorite.R
+import jeonghwan.app.favorite.ui.screen.search.SearchUiState
 import kotlinx.coroutines.time.delay
 import java.time.Duration
 
 @Composable
 fun SearchBar(
     text: String,
-    hint: String = stringResource(R.string.search_edit_placeholder),
     onValueChange: (String) -> Unit
 ) {
     DurationTextField(
         value = text,
         onDurationValueChange = onValueChange,
-        placeholder = { Text(hint) }
     )
 }
 
@@ -33,9 +32,8 @@ fun SearchBar(
 @Composable
 fun DurationTextField(
     value: String,
-    onValueChange: (String) -> Unit = {},
     onDurationValueChange: (String) -> Unit,
-    duration: Duration = Duration.ofMillis(500),
+    duration: Long = 500L,
     placeholder: @Composable (() -> Unit)? = null
 ) {
     var currentText by remember { mutableStateOf(value) }
@@ -45,13 +43,12 @@ fun DurationTextField(
         value = currentText,
         onValueChange = { newText ->
             currentText = newText
-            onValueChange(newText)
         },
         placeholder = placeholder,
     )
 
     LaunchedEffect(currentText) {
-        delay(duration)
+        delay(Duration.ofMillis(duration))
         onDurationValueChange(currentText)
     }
 }
@@ -61,7 +58,7 @@ fun DurationTextField(
 @Composable
 fun SearchBarPreview() {
     SearchBar(
-        text = "hello world",
+        text = "hello",
         onValueChange = { value ->
             // 디버깅이나 로그에 출력
             println("Debounced value: $value")

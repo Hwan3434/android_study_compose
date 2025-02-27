@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -41,7 +40,7 @@ fun ThumbnailCard(
     thumbnailUrl: String,
     date: String,
     time: String,
-    favoriteSetFlow: Flow<Set<ContentEntity>>,
+    favoriteSetFlow: () -> Flow<Set<ContentEntity>>,
     onClick: () -> Unit
 ) {
     Card(
@@ -68,13 +67,14 @@ fun ThumbnailCard(
                 contentScale = ContentScale.Crop, // 이미지를 Crop 해서 보여줌
                 contentDescription = "thumbnail",
             )
-                FavoriteRecomposition(
-                    Modifier.size(48.dp)
-                        .align(Alignment.TopEnd)
-                        .padding(4.dp),
-                    thumbnail = thumbnailUrl,
-                    favoriteSetFlow = favoriteSetFlow
-                )
+            FavoriteRecomposition(
+                Modifier
+                    .size(48.dp)
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp),
+                thumbnail = thumbnailUrl,
+                favoriteSetFlowProvider = favoriteSetFlow
+            )
 
             Column(
                 modifier = Modifier
@@ -98,15 +98,16 @@ fun ThumbnailCard(
 private fun FavoriteRecomposition(
     modifier: Modifier,
     thumbnail: String,
-    favoriteSetFlow: Flow<Set<ContentEntity>>
-){
-    val isFavoriteFlow by rememberUpdatedClickCount(thumbnail, favoriteSetFlow)
-        Icon(
-            modifier = modifier,
-            imageVector = if(isFavoriteFlow) Icons.Filled.Star else Icons.Filled.MailOutline,
-            contentDescription = "favorite",
-            tint = Color.Yellow
-        )
+    favoriteSetFlowProvider: () -> Flow<Set<ContentEntity>>
+) {
+    val isFavoriteFlow by rememberUpdatedClickCount(thumbnail, favoriteSetFlowProvider.invoke())
+
+    Icon(
+        modifier = modifier,
+        imageVector = if (isFavoriteFlow) Icons.Filled.Star else Icons.Filled.MailOutline,
+        contentDescription = "favorite",
+        tint = Color.Yellow
+    )
 }
 
 @Composable

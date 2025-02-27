@@ -37,15 +37,16 @@ class SearchViewModel @Inject constructor(
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val pagingData: Flow<PagingData<ContentEntity>> = _uiState
         .map { it.query }
-        .debounce(500L)
-        .distinctUntilChanged()
         .flatMapLatest { query ->
             if (query.isBlank()) {
                 // 빈 쿼리일 경우 리스트 최초로 초기화
                 flowOf(PagingData.empty())
             } else {
                 Pager(
-                    config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+                    config = PagingConfig(
+                        pageSize = 10,
+                        enablePlaceholders = true
+                    ),
                     pagingSourceFactory = {
                         ContentPagingSource(
                             contentUseCase,

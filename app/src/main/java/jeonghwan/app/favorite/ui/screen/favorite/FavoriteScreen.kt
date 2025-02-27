@@ -44,13 +44,13 @@ fun FavoriteUiScreen(
         modifier = modifier.padding(horizontal = 16.dp),
     ){
         LazyPagingGrid(
-            lazyPagingItems = lazyPagingItems,
+            lazyPagingItems = { lazyPagingItems },
         ) { item ->
             ThumbnailCard(
                 thumbnailUrl = item.getThumbnail(),
                 date = item.getDate(),
                 time = item.getTime(),
-                favoriteSetFlow = favoriteSet,
+                favoriteSetFlow = { favoriteSet },
                 onClick = {
                     onFavoriteClick(item)
                 }

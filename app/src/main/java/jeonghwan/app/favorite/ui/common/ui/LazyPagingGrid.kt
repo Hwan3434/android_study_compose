@@ -21,6 +21,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import jeonghwan.app.favorite.R
 import jeonghwan.app.favorite.common.HHmm
@@ -48,44 +52,20 @@ import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.ImageEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import timber.log.Timber
 
 @Composable
 fun <T : ContentEntity> LazyPagingGrid(
-    lazyPagingItems: Flow<PagingData<T>>,
+    lazyPagingItems: () -> Flow<PagingData<T>>,
     compose: @Composable (T) -> Unit
 ) {
-    val items = lazyPagingItems.collectAsLazyPagingItems()
-    if (items.itemCount == 0) {
-        EmptyView()
-        return
+    val items = lazyPagingItems().collectAsLazyPagingItems()
+    val appendLoadState by remember {
+        derivedStateOf { items.loadState.append }
     }
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val scrollState = rememberLazyStaggeredGridState()
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                if (available.y != 0f) {
-                    keyboardController?.hide()
-                }
-                return Offset.Zero
-            }
-        }
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    keyboardController?.hide()
-                }
-            }
-            .nestedScroll(nestedScrollConnection)
-    ) {
-
-
+    Column {
         LazyVerticalStaggeredGrid(
-            state = scrollState, // scrollState는 미리 정의된 상태 객체라고 가정
+            modifier = Modifier.weight(1f),
             columns = StaggeredGridCells.Fixed(2),
             verticalItemSpacing = 4.dp,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -102,53 +82,57 @@ fun <T : ContentEntity> LazyPagingGrid(
                 }
             }
         }
+        Footer(
+            appendLoadState = appendLoadState
+        )
+    }
+}
 
-        items.apply {
-            when (loadState.append) {
-                is LoadState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+@Composable
+private fun Footer(appendLoadState: LoadState) {
+    when (appendLoadState) {
+        is LoadState.Loading -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
-                is LoadState.Error -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            stringResource(R.string.data_error),
-                            color = Color.Red
+        is LoadState.Error -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    stringResource(R.string.data_error),
+                    color = Color.Red
+                )
+            }
+        }
+
+        is LoadState.NotLoading -> {
+            if (appendLoadState.endOfPaginationReached) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    stringResource(R.string.all_data_fetched_message),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(8.dp)
                         )
-                    }
-                }
-
-                is LoadState.NotLoading -> {
-                    if (loadState.append.endOfPaginationReached) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            stringResource(R.string.all_data_fetched_message),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = Color.LightGray,
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(16.dp),
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            color = Color.DarkGray
-                        )
-                    }
-                }
+                        .padding(16.dp),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.DarkGray
+                )
             }
         }
     }
@@ -178,13 +162,13 @@ private fun EmptyView() {
 @Composable
 fun PreviewEmptyLazyPagingGrid() {
     LazyPagingGrid(
-        lazyPagingItems = flowOf(PagingData.empty<ImageEntity>()),
+        lazyPagingItems = { flowOf(PagingData.empty<ImageEntity>()) },
     ) {
         ThumbnailCard(
             thumbnailUrl = "abc",
             date = nowFLong().yyyyMMdd(),
             time = nowFLong().HHmm(),
-            favoriteSetFlow = flowOf(),
+            favoriteSetFlow = { flowOf() },
             onClick = {}
         )
     }
@@ -207,13 +191,13 @@ fun PreviewPopulatedLazyPagingGrid() {
         )
     }
     LazyPagingGrid(
-        lazyPagingItems = flowOf(PagingData.from(sampleItems)),
+        lazyPagingItems = { flowOf(PagingData.from(sampleItems)) },
     ) {
         ThumbnailCard(
             thumbnailUrl = "abc",
             date = nowFLong().yyyyMMdd(),
             time = nowFLong().HHmm(),
-            favoriteSetFlow = flowOf(),
+            favoriteSetFlow = { flowOf() },
             onClick = {}
         )
     }

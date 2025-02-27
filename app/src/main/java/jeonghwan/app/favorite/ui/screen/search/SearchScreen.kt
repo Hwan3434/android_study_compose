@@ -21,32 +21,28 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val lazyPagingItems = viewModel.pagingData
-    val favoriteSet = viewModel.favoriteFlow
-
     SearchUiScreen(
-        state = uiState,
-        lazyPagingItems = lazyPagingItems,
+        state = uiState.query,
+        lazyPagingItems = viewModel::pagingData,
         onQueryChange = viewModel::updateQuery,
-        favoriteSet = favoriteSet,
+        favoriteSet = viewModel::favoriteFlow,
         onFavoriteClick = viewModel::toggleFavorite
     )
 }
 
 @Composable
 fun SearchUiScreen(
-    modifier: Modifier = Modifier,
-    state: SearchUiState,
-    lazyPagingItems: Flow<PagingData<ContentEntity>>,
-    favoriteSet: Flow<Set<ContentEntity>>,
+    state: String,
+    lazyPagingItems: () -> Flow<PagingData<ContentEntity>>,
+    favoriteSet: () -> Flow<Set<ContentEntity>>,
     onQueryChange: (String) -> Unit,
     onFavoriteClick: (ContentEntity) -> Unit,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
     ) {
         SearchBar(
-            text = state.query,
+            text = state,
         ) {
             onQueryChange(it)
         }
