@@ -65,16 +65,15 @@ fun <T : ContentEntity> LazyPagingGrid(
                     items[index]?.getThumbnail() ?: index
                 }
             ) { index ->
-                val item = items[index]
-                if (item != null) {
-                    compose(item)
-                }
+                compose(items[index]!!)
             }
         }
         Footer(
             appendLoadState = appendLoadState
         )
     }
+
+
 }
 
 @Composable

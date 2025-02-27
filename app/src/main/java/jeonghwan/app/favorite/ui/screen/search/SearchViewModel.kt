@@ -9,7 +9,6 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jeonghwan.app.favorite.domain.model.ContentEntity
 import jeonghwan.app.favorite.domain.model.FavoriteEntity
-import jeonghwan.app.favorite.domain.model.QuerySort
 import jeonghwan.app.favorite.domain.usecase.ContentUseCaseInterface
 import jeonghwan.app.favorite.domain.usecase.FavoriteUsecaseInterface
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +16,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -32,29 +32,24 @@ class SearchViewModel @Inject constructor(
     val uiState: StateFlow<SearchUiState> = _uiState
 
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val pagingData: Flow<PagingData<ContentEntity>> = _uiState
         .map { it.query }
+        .debounce(500)
         .flatMapLatest { query ->
             if (query.isBlank()) {
-                // 빈 쿼리일 경우 리스트 최초로 초기화
                 flowOf(PagingData.empty())
             } else {
                 Pager(
                     config = PagingConfig(
+                        initialLoadSize = 30,
                         pageSize = 10,
-                        enablePlaceholders = true
+                        enablePlaceholders = false
                     ),
                     pagingSourceFactory = {
                         ContentPagingSource(
                             contentUseCase,
-                            ContentPagingKey(
-                                query = query,
-                                imagePage = 1,
-                                moviePage = 1,
-                                sort = QuerySort.ACCURACY,
-                                size = 10
-                            ),
+                            query,
                         )
                     }
                 ).flow
